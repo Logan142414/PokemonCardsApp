@@ -107,6 +107,7 @@ st.write("Search Pokémon card prices scraped from PriceCharting and find underv
 df = load_data()
 
 if st.button("🔄 Refresh Price Data"):
+    st.caption("⚠️ This process may take up to 5 minutes. Please be patient while all card sets are scraped.")
     with st.spinner("Scraping latest price data..."):
         df = scrape_pricecharting_data()
         if not df.empty:
