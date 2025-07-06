@@ -76,13 +76,25 @@ def scrape_pricecharting_data():
 def load_data():
     try:
         df = pd.read_csv("latest_pokemon_prices.csv")
+        
+        # Check for correct columns
+        expected_cols = {"Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
+        if not expected_cols.issubset(df.columns):
+            st.warning("CSV loaded but has missing or unexpected columns.")
+            return pd.DataFrame()
+        
         if df.empty:
             st.warning("CSV file loaded but it's empty.")
+            return pd.DataFrame()
+
         return df
+
+    except FileNotFoundError:
+        st.info("No cached CSV found yet. Please click 'Refresh Price Data'.")
+        return pd.DataFrame()
     except Exception as e:
         st.error(f"Failed to load CSV: {e}")
         return pd.DataFrame()
-
 
 
 # --------------------------
