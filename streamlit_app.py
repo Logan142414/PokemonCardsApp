@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-from io import StringIO
 import time
 import requests
 from bs4 import BeautifulSoup
