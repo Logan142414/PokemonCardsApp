@@ -26,35 +26,36 @@ def scrape_pricecharting_data():
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
     all_data = []
-        progress = st.progress(0)
-        for i, url in enumerate(set_urls):
-            try:
-                res = requests.get(url, headers=headers)
-                soup = BeautifulSoup(res.text, 'html.parser')
+    
+    progress = st.progress(0)
+    for i, url in enumerate(set_urls):
+        try:
+            res = requests.get(url, headers=headers)
+            soup = BeautifulSoup(res.text, 'html.parser')
 
-                rows = soup.select('table tr')
-                for row in rows:
-                    cols = row.find_all('td')
-                    if len(cols) >= 4:
-                        name = cols[1].text.strip()
-                        ungraded = cols[2].text.strip().replace("$", "").replace(",", "")
-                        grade9 = cols[3].text.strip().replace("$", "").replace(",", "")
-                        psa10 = cols[4].text.strip().replace("$", "").replace(",", "")
+            rows = soup.select('table tr')
+            for row in rows:
+                cols = row.find_all('td')
+                if len(cols) >= 4:
+                    name = cols[1].text.strip()
+                    ungraded = cols[2].text.strip().replace("$", "").replace(",", "")
+                    grade9 = cols[3].text.strip().replace("$", "").replace(",", "")
+                    psa10 = cols[4].text.strip().replace("$", "").replace(",", "")
 
-                        all_data.append({
-                            "Set": url.split('/')[-1],
-                            "Card_Name": name,
-                            "Ungraded_Price": ungraded,
-                            "Grade_9_Price": grade9,
-                            "PSA_10_Price": psa10
-                        })
+                    all_data.append({
+                        "Set": url.split('/')[-1],
+                        "Card_Name": name,
+                        "Ungraded_Price": ungraded,
+                        "Grade_9_Price": grade9,
+                        "PSA_10_Price": psa10
+                    })
 
-            except Exception as e:
-                st.warning(f"Error scraping {url}: {e}")
-                continue
+        except Exception as e:
+            st.warning(f"Error scraping {url}: {e}")
+            continue
 
-            progress.progress((i + 1) / len(set_urls))
-            time.sleep(0.3)
+        progress.progress((i + 1) / len(set_urls))
+        time.sleep(0.3)
 
     # Turn into DataFrame
     df = pd.DataFrame(all_data)
