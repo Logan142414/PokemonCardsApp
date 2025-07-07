@@ -55,7 +55,7 @@ def scrape_pricecharting_data():
                 continue
 
             progress.progress((i + 1) / len(set_urls))
-            time.sleep(1)
+            time.sleep(0.3)
 
     # Turn into DataFrame
     df = pd.DataFrame(all_data)
