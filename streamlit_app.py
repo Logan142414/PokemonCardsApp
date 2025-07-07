@@ -28,6 +28,13 @@ def scrape_pricecharting_data():
     # Remove Japanese sets for now. Scrape takes too long otherwise
     set_urls = [url for url in set_urls if "japanese" not in url.lower()]
 
+    # ✅ TEMPORARY DEBUG CHECK
+    st.write("Total set URLs after filter:", len(set_urls))
+    st.write(set_urls[:10])  # Display the first 10 to check
+
+    # OPTIONAL: Stop early to prevent scraping
+    st.stop()
+
     all_data = []
     
     progress = st.progress(0)
