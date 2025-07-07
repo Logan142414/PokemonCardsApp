@@ -25,6 +25,9 @@ def scrape_pricecharting_data():
     set_links = soup.select('a[href^="/console/pokemon"]')
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
+    # Remove Japanese sets for now. Scrape takes too long otherwise
+    set_urls = [url for url in set_urls if "japanese" not in url.lower()]
+
     all_data = []
     
     progress = st.progress(0)
