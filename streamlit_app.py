@@ -101,8 +101,24 @@ def load_data():
 # --------------------------
 # App UI
 # --------------------------
-st.title("Pokémon Card Price Explorer")
-st.write("Search Pokémon card prices scraped from PriceCharting and find undervalued cards.")
+# Title with logos on both sides
+col1, col2, col3 = st.columns([1, 6, 1])
+
+with col1:
+    st.image("", width=80)
+
+with col2:
+    st.markdown(
+        "<h1 style='text-align: center;'>Pokémon Card Price Explorer</h1>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        "<div style='text-align: center;'>Search Pokémon card prices scraped from PriceCharting and find undervalued cards.</div>",
+        unsafe_allow_html=True
+    )
+
+with col3:
+    st.image("", width=80)
 
 # Load or scrape data
 df = load_data()
