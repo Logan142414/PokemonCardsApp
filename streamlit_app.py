@@ -118,7 +118,7 @@ with col2:
     )
 
 with col3:
-    st.image("Pokeball-removebg-preview.png", width=150)
+    st.image("Pokeball-removebg-preview.png", use_container_width = True)
 
 # Load or scrape data
 df = load_data()
