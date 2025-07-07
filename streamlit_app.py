@@ -100,7 +100,7 @@ def load_data():
 # --------------------------
 # App UI
 # --------------------------
-st.title("📊 Pokémon Card Price Explorer")
+st.title("Pokémon Card Price Explorer")
 st.write("Search Pokémon card prices scraped from PriceCharting and find undervalued cards.")
 
 # Load or scrape data
@@ -157,7 +157,7 @@ now = datetime.now().strftime("%Y-%m-%d_%H-%M")
 file_name = f"filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
 
 st.download_button(
-    label="⬇️ Download filtered data as CSV",
+    label="Download filtered data as CSV",
     data=csv_data,
     file_name=file_name,
     mime="text/csv"
