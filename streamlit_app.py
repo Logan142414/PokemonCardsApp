@@ -120,6 +120,8 @@ with col2:
 with col3:
     st.image("Pokeball-removebg-preview.png", use_container_width = True)
 
+st.markdown("<br>", unsafe_allow_html=True)
+
 # Load or scrape data
 df = load_data()
 
