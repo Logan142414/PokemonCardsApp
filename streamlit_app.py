@@ -141,6 +141,9 @@ if st.button("Refresh Price Data"):
 
 else:
     df = load_data()
+    df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
+    df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
+    
 
     st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
 
