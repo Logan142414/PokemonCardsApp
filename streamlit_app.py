@@ -26,7 +26,7 @@ def scrape_pricecharting_data():
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
     # Remove Japanese sets for now. Scrape takes too long otherwise
-    set_urls = [x for x in set_urls if "japanese" not in x.lower()]
+    set_urls = [url for url in set_urls if "japanese" not in url.lower()]
 
     all_data = []
     
@@ -63,14 +63,14 @@ def scrape_pricecharting_data():
     # Turn into DataFrame
     df = pd.DataFrame(all_data)
 
-    df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
-
     if df.empty:
         return df
 
     # Ensure correct column types
     for col in ["Ungraded_Price", "Grade_9_Price", "PSA_10_Price"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
 
     return df
 
