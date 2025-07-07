@@ -105,7 +105,7 @@ def load_data():
 col1, col2, col3 = st.columns([1, 6, 1])
 
 with col1:
-    st.image("", width=80)
+    st.image("PikaRunning.png", width=80)
 
 with col2:
     st.markdown(
@@ -118,7 +118,7 @@ with col2:
     )
 
 with col3:
-    st.image("", width=80)
+    st.image("Pokeball.png", width=80)
 
 # Load or scrape data
 df = load_data()
