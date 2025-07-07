@@ -125,7 +125,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 df = load_data()
 
 if st.button("🔄 Refresh Price Data"):
-    with st.spinner("🔄 Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
+    with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
         df = scrape_pricecharting_data()
         if not df.empty:
             df.columns = df.columns.str.replace(" ", "_") 
