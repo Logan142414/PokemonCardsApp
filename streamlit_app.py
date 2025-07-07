@@ -156,6 +156,7 @@ min_grade9 = st.sidebar.number_input("Min Grade 9 Price", value=0)
 min_psa10 = st.sidebar.number_input("Min PSA 10 Price", value=0)
 
 filtered = df[
+    (df["Set"].isin(selected_sets)) &
     (df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
     (df["Grade_9_Price"] >= min_grade9) &
     (df["PSA_10_Price"] >= min_psa10)
