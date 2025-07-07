@@ -157,8 +157,8 @@ all_sets = df["Set"].sort_values().unique()
 selected_sets = st.sidebar.multiselect("Select Set(s)", all_sets, default=all_sets)
 
 min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", min_value=0.01, max_value=1000.0, value=(0.01, 50.0), step=0.01)
-min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=1, value=0)
-min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=1, value=0)
+min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
+min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
 
 filtered = df[
     (df["Set"].isin(selected_sets)) &
