@@ -135,7 +135,11 @@ if st.button("Refresh Price Data"):
         if not df.empty:
             df.columns = df.columns.str.replace(" ", "_") 
             df.to_csv("latest_pokemon_prices.csv", index=False)
-        st.success("Data refreshed!")
+            st.success("Data refreshed!")
+        st.rerun()  # 👈 force a full rerun of the app
+
+else:
+    df = load_data()
 
     st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
 
