@@ -26,7 +26,7 @@ def scrape_pricecharting_data():
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
     # Remove Japanese sets for now. Scrape takes too long otherwise
-    set_urls = [url for url in set_urls if "japanese" not in url.lower()]
+    set_urls = [x for x in set_urls if "japanese" not in x.lower()]
 
     all_data = []
     
