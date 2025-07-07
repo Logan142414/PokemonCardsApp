@@ -113,9 +113,9 @@ with col2:
         unsafe_allow_html=True
     )
     st.markdown(
-        "<div style='text-align: center;'>Search Pokémon card prices scraped from PriceCharting and find undervalued cards.</div>",
-        unsafe_allow_html=True
-    )
+    "<div style='text-align: center; font-size: 14px;'>Search Pokémon card prices scraped from PriceCharting and find undervalued cards.</div>",
+    unsafe_allow_html=True
+)
 
 with col3:
     st.image("Pokeball-removebg-preview.png", use_container_width = True)
