@@ -26,8 +26,6 @@ def scrape_pricecharting_data():
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
     all_data = []
-
-    with st.spinner("Scraping sets..."):
         progress = st.progress(0)
         for i, url in enumerate(set_urls):
             try:
