@@ -105,7 +105,7 @@ def load_data():
 col1, col2, col3 = st.columns([1, 6, 1])
 
 with col1:
-    st.image("PikaRunning.png", use_column_width=True)
+    st.image("PikaRunning.png", use_container_width = True)
 
 with col2:
     st.markdown(
