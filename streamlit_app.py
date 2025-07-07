@@ -131,7 +131,7 @@ for col in price_cols:
 # --------------------------
 st.sidebar.header("Filter Options")
 
-min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", 0, 500, (10, 50))
+min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", min_value=0.01, max_value=10000.0, value=(10.0, 50.0), step=0.01)
 min_grade9 = st.sidebar.number_input("Min Grade 9 Price", value=0)
 min_psa10 = st.sidebar.number_input("Min PSA 10 Price", value=0)
 
@@ -153,10 +153,13 @@ def convert_df_to_csv(df):
 
 csv_data = convert_df_to_csv(filtered)
 
+now = datetime.now().strftime("%Y-%m-%d_%H-%M")
+file_name = f"filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
+
 st.download_button(
     label="⬇️ Download filtered data as CSV",
     data=csv_data,
-    file_name="filtered_pokemon_cards.csv",
+    file_name=file_name,
     mime="text/csv"
 )
 
