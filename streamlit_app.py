@@ -164,4 +164,4 @@ st.download_button(
 )
 
 st.markdown("---")
-st.markdown("Built by Logan Laszewski 💡")
+st.markdown("Built by Logan Laszewski")
