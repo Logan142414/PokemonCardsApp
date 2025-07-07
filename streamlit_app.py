@@ -71,6 +71,7 @@ def scrape_pricecharting_data():
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
     df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
+    df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
 
     return df
 
@@ -157,8 +158,17 @@ for col in price_cols:
 # --------------------------
 st.sidebar.header("Filter Options")
 
-all_sets = df["Set"].sort_values().unique()
-selected_sets = st.sidebar.multiselect("Select Set(s)", all_sets, default=all_sets)
+all_sets = sorted(df["Set"].unique())
+select_all_sets = st.sidebar.checkbox("Select all sets", value=True)
+
+if select_all_sets:
+    selected_sets = all_sets
+else:
+    selected_sets = st.sidebar.multiselect("Choose Set(s)", options=all_sets)
+
+if not selected_sets:
+    st.warning("Please select at least one set.")
+    st.stop()
 
 min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", min_value=0.01, max_value=1000.0, value=(0.01, 50.0), step=0.01)
 min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
