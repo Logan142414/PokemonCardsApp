@@ -60,7 +60,8 @@ def scrape_pricecharting_data():
                         "Card_Name": name,
                         "Ungraded_Price": ungraded,
                         "Grade_9_Price": grade9,
-                        "PSA_10_Price": psa10
+                        "PSA_10_Price": psa10,
+                        "Image_URL": img_url
                         
                     })
 
@@ -216,7 +217,6 @@ st.subheader(f"Filtered Results ({len(filtered)} cards)")
 # Add a sidebar checkbox to control image column visibility
 # Warn users before enabling thumbnails
 st.sidebar.caption("⚠️ Enabling image thumbnails may slow down loading or cause images to fail.")
-
 show_images = st.sidebar.checkbox("Show image thumbnails", value=False)
 
 if show_images:
@@ -226,16 +226,16 @@ if show_images:
 
     styled_df = filtered.copy()
     styled_df["Image"] = styled_df["Image_URL"].apply(image_tag)
-    styled_df = styled_df.drop(columns=["Image_URL"])  # Optional: hide raw URL
+    styled_df = styled_df.drop(columns=["Image_URL"])  
 
     # Reorder so image appears first (optional)
     cols = ["Image"] + [col for col in styled_df.columns if col != "Image"]
     styled_df = styled_df[cols]
 
-    # Display HTML table with images
     st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 else:
-    st.dataframe(filtered.reset_index(drop=True))
+    filtered_display = filtered.drop(columns=["Image_URL"])
+    st.dataframe(filtered_display.reset_index(drop=True))
 
 
 # Optional visual preview of each card
