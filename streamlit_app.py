@@ -44,8 +44,7 @@ def scrape_pricecharting_data():
                     img_tag = cols[0].find("img")
         
                     if img_tag and "src" in img_tag.attrs:
-                        # Replace 60.jpg with 500.jpg for higher resolution image
-                        img_url = img_tag["src"].replace("/60.jpg", "/500.jpg")
+                        img_url = img_tag["src"]
                     else:
                         img_url = ""
         
