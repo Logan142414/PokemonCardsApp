@@ -60,8 +60,8 @@ def scrape_pricecharting_data():
                         "Card_Name": name,
                         "Ungraded_Price": ungraded,
                         "Grade_9_Price": grade9,
-                        "PSA_10_Price": psa10,
-                        "Image_URL": img_url
+                        "PSA_10_Price": psa10
+                        
                     })
 
         except Exception as e:
