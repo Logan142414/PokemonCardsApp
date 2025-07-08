@@ -24,6 +24,8 @@ def scrape_pricecharting_data():
 
     # Get all set links
     set_links = soup.select('a[href^="/console/pokemon"]')
+    st.write("Found set links:", len(set_links))
+    st.write([link["href"] for link in set_links][:10])
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
     # Remove Japanese sets for now. Scrape takes too long otherwise
@@ -140,11 +142,6 @@ df = load_data()
 if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
         df = scrape_pricecharting_data()
-
-        # 🔍 DEBUG: Show first few rows
-        st.write("Scraped Data Preview:")
-        st.write(df.head())
-
             
         if not df.empty:
             os.makedirs("data", exist_ok=True)
