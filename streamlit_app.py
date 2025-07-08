@@ -157,8 +157,14 @@ if st.button("Refresh Price Data"):
 
 else:
     df = load_data()
-    df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
-    df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
+
+    required_cols = {"Grade_9_Price", "Ungraded_Price", "Set"}
+    if required_cols.issubset(df.columns):
+        df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
+        df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
+    else:
+        st.warning("Missing expected columns in the CSV. Please click 'Refresh Price Data'.")
+        st.stop()
     
 
     st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
