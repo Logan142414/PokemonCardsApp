@@ -88,24 +88,21 @@ def scrape_pricecharting_data():
 # --------------------------
 @st.cache_data
 def load_data():
+    file_path = "latest_pokemon_prices.csv"
+    expected_cols = {"Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price", "Image_URL"}
+    
+    if not os.path.exists(file_path):
+        return pd.DataFrame()
+
     try:
-        df = pd.read_csv("latest_pokemon_prices.csv")
-        
-        # Check for correct columns
-        expected_cols = {"Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price", "Image_URL"}
+        df = pd.read_csv(file_path)
+
         if not expected_cols.issubset(df.columns):
-            st.warning("CSV loaded but has missing or unexpected columns.")
-            return pd.DataFrame()
-        
-        if df.empty:
-            st.warning("CSV file loaded but it's empty.")
+            os.remove(file_path)
             return pd.DataFrame()
 
         return df
 
-    except FileNotFoundError:
-        st.info("No cached CSV found yet. Please click 'Refresh Price Data'.")
-        return pd.DataFrame()
     except Exception as e:
         st.error(f"Failed to load CSV: {e}")
         return pd.DataFrame()
@@ -136,38 +133,27 @@ with col3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 
-# Delete outdated CSV if it's missing required columns
-if os.path.exists("latest_pokemon_prices.csv"):
-    df_check = pd.read_csv("latest_pokemon_prices.csv")
-    expected_cols = {
-        "Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price", "Image_URL"
-    }
-    if not expected_cols.issubset(df_check.columns):
-        os.remove("latest_pokemon_prices.csv")
-        st.stop()
-
-# Load or scrape data
+# Load existing data
 df = load_data()
 
+# Show refresh button
 if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
         df = scrape_pricecharting_data()
         if not df.empty:
-            df.columns = df.columns.str.replace(" ", "_") 
             df.to_csv("latest_pokemon_prices.csv", index=False)
             st.success("Data refreshed!")
-        st.rerun()  # 👈 force a full rerun of the app
+        st.rerun()
 
-else:
-    required_cols = {"Grade_9_Price", "Ungraded_Price", "Set"}
-    if required_cols.issubset(df.columns):
-        df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
-        df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
-    else:
-        st.stop()
-    
+# Stop if no data is available
+if df.empty:
+    st.info("No cached data found. Please click 'Refresh Price Data'.")
+    st.stop()
 
-    st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
+# Process columns
+df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
+df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
+st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
 
 
 # Convert price columns to numeric if needed
