@@ -87,7 +87,7 @@ def load_data():
         df = pd.read_csv("latest_pokemon_prices.csv")
         
         # Check for correct columns
-        expected_cols = {"Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
+        expected_cols = {"Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price", "Image_URL"}
         if not expected_cols.issubset(df.columns):
             st.warning("CSV loaded but has missing or unexpected columns.")
             return pd.DataFrame()
