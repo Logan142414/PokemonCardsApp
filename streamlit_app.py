@@ -143,7 +143,7 @@ if st.button("Refresh Price Data"):
 
         # 🔍 DEBUG: Show first few rows
         st.write("Scraped Data Preview:")
-        st.write(df.head()
+        st.write(df.head())
 
             
         if not df.empty:
