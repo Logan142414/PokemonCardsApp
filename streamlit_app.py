@@ -24,8 +24,6 @@ def scrape_pricecharting_data():
 
     # Get all set links
     set_links = soup.select('a[href^="/console/pokemon"]')
-    st.write("Found set links:", len(set_links))
-    st.write([link["href"] for link in set_links][:10])
     set_urls = list(set(BASE_URL + link["href"] for link in set_links))
 
     # Remove Japanese sets for now. Scrape takes too long otherwise
@@ -135,24 +133,24 @@ with col3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 
-# Load existing data
-df = load_data()
-
 # Show refresh button
 if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
-        df = scrape_pricecharting_data()
-            
-        if not df.empty:
-            os.makedirs("data", exist_ok=True)
-            df.to_csv("data/latest_pokemon_prices.csv", index=False)
-            st.success("Data refreshed!")
-        st.rerun()
+        df_scraped = scrape_pricecharting_data()
 
-# Stop if no data is available
-if df.empty:
-    st.info("No cached data found. Please click 'Refresh Price Data'.")
-    st.stop()
+        if not df_scraped.empty:
+            os.makedirs("data", exist_ok=True)
+            df_scraped.to_csv("data/latest_pokemon_prices.csv", index=False)
+            st.success("Data refreshed!")
+            df = df_scraped  # ✅ use the scraped data immediately
+        else:
+            st.error("Scraping failed or returned no data.")
+            st.stop()
+
+# ✅ Always load from saved file if not scraped
+if "df" not in locals():
+    df = load_data()
+            
 
 # Process columns
 df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
