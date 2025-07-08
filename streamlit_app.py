@@ -190,6 +190,23 @@ filtered = df[
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
 st.dataframe(filtered.reset_index(drop=True))
 
+# Optional visual preview of each card
+show_visuals = st.checkbox("Show visual preview of each card", value=False)
+
+if show_visuals:
+    st.markdown("### 📸 Visual Results")
+    for _, row in filtered.iterrows():
+        if pd.notna(row["Image_URL"]) and row["Image_URL"].strip() != "":
+            st.image(row["Image_URL"], width=100)
+        st.write(f"**{row['Card_Name']}**")
+        st.write(
+            f"Ungraded: ${row['Ungraded_Price']:.2f} | "
+            f"PSA 9: ${row['Grade_9_Price']:.2f} | "
+            f"PSA 10: ${row['PSA_10_Price']:.2f} | "
+            f"Deal Value: ${row['Deal_Value']:.2f}"
+        )
+        st.markdown("---")
+
 # --------------------------
 # Download Button
 # --------------------------
