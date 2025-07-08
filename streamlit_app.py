@@ -4,6 +4,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import os
 
 # --------------------------
 #Scraping Logic
@@ -129,6 +130,18 @@ with col3:
     st.image("Pokeball-removebg-preview.png", use_container_width = True)
 
 st.markdown("<br>", unsafe_allow_html=True)
+
+
+# Delete outdated CSV if it's missing required columns
+if os.path.exists("latest_pokemon_prices.csv"):
+    df_check = pd.read_csv("latest_pokemon_prices.csv")
+    expected_cols = {
+        "Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price", "Image_URL"
+    }
+    if not expected_cols.issubset(df_check.columns):
+        os.remove("latest_pokemon_prices.csv")
+        st.warning("Outdated CSV removed. Please click 'Refresh Price Data' to re-scrape.")
+        st.stop()
 
 # Load or scrape data
 df = load_data()
