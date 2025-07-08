@@ -156,11 +156,19 @@ if st.button("Refresh Price Data"):
 if "df" not in locals():
     df = load_data()
 
-# 🔒 Guard against missing columns
+# 🔒 Guard against missing or bad data
 required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
-if not required_cols.issubset(df.columns):
-    st.error("Data is missing required columns. Please refresh.")
-    st.stop()
+if df.empty or not required_cols.issubset(df.columns):
+    st.warning("Saved data is invalid. Attempting to re-scrape...")
+    with st.spinner("Re-scraping due to invalid or missing data..."):
+        df = scrape_pricecharting_data()
+        if not df.empty:
+            os.makedirs("data", exist_ok=True)
+            df.to_csv("data/latest_pokemon_prices.csv", index=False)
+            st.success("Data scraped and saved.")
+        else:
+            st.error("Scraping failed. Please try again.")
+            st.stop()
 
 # Process columns
 df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
