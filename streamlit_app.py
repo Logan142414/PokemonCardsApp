@@ -140,7 +140,6 @@ if os.path.exists("latest_pokemon_prices.csv"):
     }
     if not expected_cols.issubset(df_check.columns):
         os.remove("latest_pokemon_prices.csv")
-        st.warning("Outdated CSV removed. Please click 'Refresh Price Data' to re-scrape.")
         st.stop()
 
 # Load or scrape data
