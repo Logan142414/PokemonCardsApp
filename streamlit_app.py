@@ -42,7 +42,13 @@ def scrape_pricecharting_data():
                 cols = row.find_all('td')
                 if len(cols) >= 5:
                     img_tag = cols[0].find("img")
-                    img_url = img_tag["src"] if img_tag else ""
+        
+                    if img_tag and "src" in img_tag.attrs:
+                        # Replace 60.jpg with 500.jpg for higher resolution image
+                        img_url = img_tag["src"].replace("/60.jpg", "/500.jpg")
+                    else:
+                        img_url = ""
+        
                     name = cols[1].text.strip()
                     ungraded = cols[2].text.strip().replace("$", "").replace(",", "")
                     grade9 = cols[3].text.strip().replace("$", "").replace(",", "")
