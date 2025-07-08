@@ -5,6 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # --------------------------
 #Scraping Logic
@@ -174,7 +176,8 @@ df = get_valid_data()
 # Process columns
 df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
 df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
-st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
+eastern_time = datetime.now(ZoneInfo("America/New_York"))
+st.caption(f"🕒 Data last updated: {eastern_time.strftime('%Y-%m-%d %H:%M')}")
 
 
 # Convert price columns to numeric if needed
@@ -213,6 +216,9 @@ filtered = df[
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
 
 # Add a sidebar checkbox to control image column visibility
+# Warn users before enabling thumbnails
+st.sidebar.caption("⚠️ Enabling image thumbnails may slow down loading or cause images to fail.")
+
 show_images = st.sidebar.checkbox("Show image thumbnails", value=False)
 
 if show_images:
