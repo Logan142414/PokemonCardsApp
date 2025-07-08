@@ -88,9 +88,9 @@ def scrape_pricecharting_data():
 # --------------------------
 @st.cache_data
 def load_data():
-    file_path = "latest_pokemon_prices.csv"
+    file_path = "data/latest_pokemon_prices.csv"
     expected_cols = {"Set", "Card_Name", "Ungraded_Price", "Grade_9_Price", "PSA_10_Price", "Image_URL"}
-    
+
     if not os.path.exists(file_path):
         return pd.DataFrame()
 
@@ -141,7 +141,8 @@ if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
         df = scrape_pricecharting_data()
         if not df.empty:
-            df.to_csv("latest_pokemon_prices.csv", index=False)
+            os.makedirs("data", exist_ok=True)
+            df.to_csv("data/latest_pokemon_prices.csv", index=False)
             st.success("Data refreshed!")
         st.rerun()
 
