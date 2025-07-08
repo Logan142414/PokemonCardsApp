@@ -140,6 +140,12 @@ df = load_data()
 if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
         df = scrape_pricecharting_data()
+
+        # 🔍 DEBUG: Show first few rows
+        st.write("Scraped Data Preview:")
+        st.write(df.head()
+
+            
         if not df.empty:
             os.makedirs("data", exist_ok=True)
             df.to_csv("data/latest_pokemon_prices.csv", index=False)
