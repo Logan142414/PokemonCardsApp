@@ -50,10 +50,10 @@ def scrape_pricecharting_data():
                     all_data.append({
                         "Set": url.split('/')[-1],
                         "Card_Name": name,
-                        "Image_URL": img_url,
                         "Ungraded_Price": ungraded,
                         "Grade_9_Price": grade9,
-                        "PSA_10_Price": psa10
+                        "PSA_10_Price": psa10,
+                        "Image_URL": img_url
                     })
 
         except Exception as e:
