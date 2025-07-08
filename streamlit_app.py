@@ -163,7 +163,6 @@ else:
         df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
         df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
     else:
-        st.warning("Missing expected columns in the CSV. Please click 'Refresh Price Data'.")
         st.stop()
     
 
