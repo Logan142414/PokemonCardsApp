@@ -192,7 +192,22 @@ filtered = df[
 ]
 
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
-st.dataframe(filtered.reset_index(drop=True))
+#st.dataframe(filtered.reset_index(drop=True))
+
+# Convert the Image_URL column into clickable links
+def make_clickable(url):
+    return f'<a href="{url}" target="_blank">View</a>'
+
+styled_df = filtered.copy()
+styled_df["Image_URL"] = styled_df["Image_URL"].apply(make_clickable)
+
+# Display as HTML with links
+st.markdown(
+    styled_df.to_html(escape=False, index=False),
+    unsafe_allow_html=True
+)
+
+
 
 # Optional visual preview of each card
 #show_visuals = st.checkbox("Show visual preview of each card", value=False)
