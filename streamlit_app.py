@@ -191,21 +191,51 @@ st.subheader(f"Filtered Results ({len(filtered)} cards)")
 st.dataframe(filtered.reset_index(drop=True))
 
 # Optional visual preview of each card
-show_visuals = st.checkbox("Show visual preview of each card", value=False)
+#show_visuals = st.checkbox("Show visual preview of each card", value=False)
 
-if show_visuals:
-    st.markdown("### 📸 Visual Results")
-    for _, row in filtered.iterrows():
-        if pd.notna(row["Image_URL"]) and row["Image_URL"].strip() != "":
-            st.image(row["Image_URL"], width=100)
-        st.write(f"**{row['Card_Name']}**")
-        st.write(
-            f"Ungraded: ${row['Ungraded_Price']:.2f} | "
-            f"PSA 9: ${row['Grade_9_Price']:.2f} | "
-            f"PSA 10: ${row['PSA_10_Price']:.2f} | "
-            f"Deal Value: ${row['Deal_Value']:.2f}"
-        )
-        st.markdown("---")
+#if show_visuals:
+  #  st.markdown("### 📸 Visual Results")
+   # for _, row in filtered.iterrows():
+      #  if pd.notna(row["Image_URL"]) and row["Image_URL"].strip() != "":
+           # st.image(row["Image_URL"], width=100)
+       # st.write(f"**{row['Card_Name']}**")
+       # st.write(
+           # f"Ungraded: ${row['Ungraded_Price']:.2f} | "
+           # f"PSA 9: ${row['Grade_9_Price']:.2f} | "
+           # f"PSA 10: ${row['PSA_10_Price']:.2f} | "
+           # f"Deal Value: ${row['Deal_Value']:.2f}"
+       # )
+       # st.markdown("---")
+
+
+
+st.markdown("### 📸 Visual Results")
+
+for _, row in filtered.iterrows():
+    image_url = row["Image_URL"]
+    card_name = row["Card_Name"]
+    ungraded = row["Ungraded_Price"]
+    grade9 = row["Grade_9_Price"]
+    psa10 = row["PSA_10_Price"]
+    deal = row["Deal_Value"]
+
+    hover_html = f"""
+    <div style="position: relative; display: inline-block;">
+        <span style="font-weight: bold; font-size: 16px;">{card_name}</span>
+        <div style="display: none; position: absolute; z-index: 1; top: 20px; left: 0;" class="hover-image">
+            <img src="{image_url}" width="150" style="border: 1px solid #ddd; border-radius: 5px;" />
+        </div>
+    </div>
+    <style>
+        div:hover .hover-image {{
+            display: block;
+        }}
+    </style>
+    <p>Ungraded: ${ungraded:.2f} | PSA 9: ${grade9:.2f} | PSA 10: ${psa10:.2f} | Deal Value: ${deal:.2f}</p>
+    <hr>
+    """
+
+    st.markdown(hover_html, unsafe_allow_html=True)
 
 # --------------------------
 # Download Button
