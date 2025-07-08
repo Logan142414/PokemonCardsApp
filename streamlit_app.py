@@ -153,20 +153,23 @@ if st.button("Refresh Price Data"):
             st.stop()
 
 # ✅ Always load from saved file if not scraped
-df = load_data()
+@st.cache_data
+def get_valid_data():
+    df = load_data()
 
-# 🔒 Guard against missing or bad data
-required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
-if df.empty or not required_cols.issubset(df.columns):
-    with st.spinner("Saved data is invalid or missing. Re-scraping now..."):
+    required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
+    if df.empty or not required_cols.issubset(df.columns):
         df = scrape_pricecharting_data()
         if not df.empty:
             os.makedirs("data", exist_ok=True)
             df.to_csv("data/latest_pokemon_prices.csv", index=False)
-            st.success("Data scraped and saved.")
         else:
             st.error("Scraping failed. Please try again.")
             st.stop()
+
+    return df
+
+df = get_valid_data()
 
 # Process columns
 df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
