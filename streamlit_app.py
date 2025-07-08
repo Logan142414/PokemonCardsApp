@@ -158,8 +158,7 @@ df = load_data()
 # 🔒 Guard against missing or bad data
 required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
 if df.empty or not required_cols.issubset(df.columns):
-    st.warning("Saved data is invalid or missing. Attempting to re-scrape...")
-    with st.spinner("Re-scraping due to invalid or missing data..."):
+    with st.spinner("Saved data is invalid or missing. Re-scraping now..."):
         df = scrape_pricecharting_data()
         if not df.empty:
             os.makedirs("data", exist_ok=True)
