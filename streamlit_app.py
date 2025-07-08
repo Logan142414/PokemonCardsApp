@@ -39,7 +39,9 @@ def scrape_pricecharting_data():
             rows = soup.select('table tr')
             for row in rows:
                 cols = row.find_all('td')
-                if len(cols) >= 4:
+                if len(cols) >= 5:
+                    img_tag = cols[0].find("img")
+                    img_url = img_tag["src"] if img_tag else ""
                     name = cols[1].text.strip()
                     ungraded = cols[2].text.strip().replace("$", "").replace(",", "")
                     grade9 = cols[3].text.strip().replace("$", "").replace(",", "")
@@ -48,6 +50,7 @@ def scrape_pricecharting_data():
                     all_data.append({
                         "Set": url.split('/')[-1],
                         "Card_Name": name,
+                        "Image_URL": img_url,
                         "Ungraded_Price": ungraded,
                         "Grade_9_Price": grade9,
                         "PSA_10_Price": psa10
