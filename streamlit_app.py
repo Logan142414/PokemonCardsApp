@@ -155,7 +155,12 @@ if st.button("Refresh Price Data"):
 # ✅ Always load from saved file if not scraped
 if "df" not in locals():
     df = load_data()
-            
+
+# 🔒 Guard against missing columns
+required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
+if not required_cols.issubset(df.columns):
+    st.error("Data is missing required columns. Please refresh.")
+    st.stop()
 
 # Process columns
 df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
