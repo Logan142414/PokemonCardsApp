@@ -197,23 +197,27 @@ filtered = df[
 ]
 
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
-#st.dataframe(filtered.reset_index(drop=True))
 
-# Create image column with HTML <img> tag wrapped in a link
-def image_tag(url):
-    return f'<a href="{url}" target="_blank"><img src="{url}" width="80"></a>'
+# Add a sidebar checkbox to control image column visibility
+show_images = st.sidebar.checkbox("Show image thumbnails", value=False)
 
-styled_df = filtered.copy()
-styled_df["Image"] = styled_df["Image_URL"].apply(image_tag)
-styled_df = styled_df.drop(columns=["Image_URL"])  # Optional: hide raw URL
+if show_images:
+    # Create image column with HTML <img> tag wrapped in a link
+    def image_tag(url):
+        return f'<a href="{url}" target="_blank"><img src="{url}" width="80"></a>'
 
-# Reorder so image appears first (optional)
-cols = ["Image"] + [col for col in styled_df.columns if col != "Image"]
-styled_df = styled_df[cols]
+    styled_df = filtered.copy()
+    styled_df["Image"] = styled_df["Image_URL"].apply(image_tag)
+    styled_df = styled_df.drop(columns=["Image_URL"])  # Optional: hide raw URL
 
-# Display table with inline images
-st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
+    # Reorder so image appears first (optional)
+    cols = ["Image"] + [col for col in styled_df.columns if col != "Image"]
+    styled_df = styled_df[cols]
 
+    # Display HTML table with images
+    st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
+else:
+    st.dataframe(filtered.reset_index(drop=True))
 
 
 # Optional visual preview of each card
