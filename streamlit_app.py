@@ -77,6 +77,10 @@ def scrape_pricecharting_data():
     df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
     df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
 
+    # Reorder columns to place Image_URL last
+    cols = [col for col in df.columns if col != "Image_URL"] + ["Image_URL"]
+    df = df[cols]
+
     return df
 
 
