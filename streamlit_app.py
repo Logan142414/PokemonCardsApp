@@ -159,8 +159,6 @@ if st.button("Refresh Price Data"):
         st.rerun()  # 👈 force a full rerun of the app
 
 else:
-    df = load_data()
-
     required_cols = {"Grade_9_Price", "Ungraded_Price", "Set"}
     if required_cols.issubset(df.columns):
         df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
@@ -171,9 +169,6 @@ else:
 
     st.caption(f"🕒 Data last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}")
 
-if df.empty:
-    st.warning("No data available. Try refreshing or upload a CSV.")
-    st.stop()
 
 # Convert price columns to numeric if needed
 price_cols = ["Ungraded_Price", "Grade_9_Price", "PSA_10_Price"]
