@@ -11,38 +11,83 @@ from zoneinfo import ZoneInfo
 st.markdown(
     """
     <style>
-        body {
-            background-color: #000000;
-            color: white;
-        }
-        .stApp {
-            background-color: #000000;
-            color: white;
-        }
-        /* Sidebar */
-        .css-1d391kg, .css-1cpxqw2, .st-bb {
-            background-color: #1a1a1a !important;
-            color: white !important;
-        }
-        /* Buttons */
-        .stButton>button {
-            background-color: #333 !important;
-            color: white !important;
-        }
-        .stDownloadButton>button {
-            background-color: #444 !important;
-            color: white !important;
-        }
-        /* Table background */
-        .stDataFrame {
-            background-color: #111 !important;
-            color: white !important;
-        }
+    /* Global Background and Font */
+    body, .stApp {
+        background-color: #000000;
+        color: #FFFFFF;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #1a1a1a;
+        color: white;
+        border-right: 1px solid #333;
+    }
+
+    /* Sidebar widgets */
+    .st-c2, .stCheckbox {
+        color: white !important;
+    }
+
+    /* Titles */
+    h1, h2, h3, h4, h5 {
+        color: #FFD700; /* gold */
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background-color: #333333 !important;
+        color: #FFFFFF !important;
+        border: 1px solid #555;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .stButton > button:hover {
+        background-color: #555555 !important;
+        color: #FFD700 !important;
+    }
+
+    /* Download Button */
+    .stDownloadButton > button {
+        background-color: #444 !important;
+        color: white !important;
+        border-radius: 8px;
+    }
+
+    /* DataFrame styling */
+    .stDataFrame {
+        background-color: #111 !important;
+        color: white !important;
+        border-radius: 6px;
+    }
+
+    /* Progress Bar */
+    .stProgress > div > div {
+        background-color: #FFD700 !important;
+    }
+
+    /* Table text (fallback) */
+    .css-1d391kg, .css-1cpxqw2, .st-bb {
+        background-color: #111 !important;
+        color: white !important;
+    }
+
+    /* Slider track and handle */
+    .stSlider > div > div > div {
+        background-color: #FFD700 !important;
+    }
+
+    /* Warnings or captions */
+    .stMarkdown small, .stCaption {
+        color: #AAAAAA;
+        font-size: 0.85rem;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 # --------------------------
 #Scraping Logic
 
