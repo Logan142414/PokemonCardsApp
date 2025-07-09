@@ -13,7 +13,7 @@ st.markdown(
     <style>
     /* Global background + font */
     body, .stApp {
-        background-color: #121212;
+        background-color: #181818;  /* Softer dark background */
         color: #FFFFFF;
         font-family: 'Segoe UI', sans-serif;
     }
@@ -23,18 +23,26 @@ st.markdown(
         color: #FFFFFF;
     }
 
-    /* Sidebar - now maroon */
+    /* Sidebar background */
     section[data-testid="stSidebar"] {
-        background-color: #800000;
+        background-color: #800000;  /* Maroon sidebar */
         color: white;
     }
 
-    /* Sidebar text, sliders, and checkboxes */
-    .st-c2, .stCheckbox, .stSlider, .stTextInput {
+    /* Sidebar label text (e.g. "Min PSA 10 Price") */
+    .st-c2, .st-c3, label, .stTextInput label, .stNumberInput label {
         color: white !important;
+        font-weight: 500;
     }
+
+    /* Sliders and number inputs */
     .stSlider > div[data-baseweb="slider"] {
         background-color: #FFD700 !important;
+    }
+
+    /* Checkboxes and inputs */
+    .stCheckbox, .stTextInput, .stNumberInput {
+        color: white !important;
     }
 
     /* Buttons */
@@ -56,16 +64,16 @@ st.markdown(
         border-radius: 6px;
     }
 
-    /* Data Table */
+    /* Data Table background */
     .stDataFrame {
-        background-color: #1e1e1e !important;
+        background-color: #222 !important;
         color: white !important;
         border-radius: 6px;
         border: 1px solid #333;
         padding: 10px;
     }
 
-    /* Progress bar highlight */
+    /* Progress bar color */
     .stProgress > div > div {
         background-color: #FFD700 !important;
     }
