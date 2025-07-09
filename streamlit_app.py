@@ -82,6 +82,30 @@ st.markdown(
     /* Footnotes / Captions */
     .stMarkdown small, .stCaption {
         color: #CCCCCC;
+
+
+    /* Slider background fix inside sidebar */
+div[data-testid="stSidebar"] .stSlider > div[data-baseweb="slider"] {
+    background-color: #800000 !important;  /* match sidebar maroon */
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+
+/* Adjust slider rail and handles */
+div[data-testid="stSidebar"] .stSlider .rc-slider-track {
+    background-color: #ffcccc !important;  /* light red track */
+}
+div[data-testid="stSidebar"] .stSlider .rc-slider-handle {
+    background-color: white !important;
+    border: 2px solid #ff6666 !important;
+}
+
+/* Slider value labels */
+div[data-testid="stSidebar"] .stSlider .rc-slider-mark-text {
+    color: white !important;
+    font-weight: bold;
+}
+
     }
     </style>
     """,
