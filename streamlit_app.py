@@ -11,41 +11,36 @@ from zoneinfo import ZoneInfo
 st.markdown(
     """
     <style>
-    /* Global Background and Font */
+    /* Global background + font */
     body, .stApp {
-        background-color: #000000;
+        background-color: #121212;
         color: #FFFFFF;
         font-family: 'Segoe UI', sans-serif;
     }
 
-    /* Sidebar Styling */
-    section[data-testid="stSidebar"] {
-        background-color: #1a1a1a;
-        color: white;
-        border-right: 1px solid #333;
-    }
-
-    /* Sidebar widgets */
-    .st-c2, .stCheckbox {
-        color: white !important;
-    }
-
-    /* Titles */
+    /* Header text */
     h1, h2, h3, h4, h5 {
-        color: #FFD700; /* gold */
+        color: #FFFFFF;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #1f1f1f;
+        color: white;
+    }
+    .st-c2, .stCheckbox, .stSlider {
+        color: white !important;
     }
 
     /* Buttons */
     .stButton > button {
-        background-color: #333333 !important;
-        color: #FFFFFF !important;
-        border: 1px solid #555;
-        border-radius: 8px;
-        transition: all 0.2s ease;
+        background-color: #333 !important;
+        color: white !important;
+        border: 1px solid #666;
+        border-radius: 6px;
     }
-
     .stButton > button:hover {
-        background-color: #555555 !important;
+        background-color: #555 !important;
         color: #FFD700 !important;
     }
 
@@ -53,14 +48,16 @@ st.markdown(
     .stDownloadButton > button {
         background-color: #444 !important;
         color: white !important;
-        border-radius: 8px;
+        border-radius: 6px;
     }
 
-    /* DataFrame styling */
+    /* Table (DataFrame) */
     .stDataFrame {
-        background-color: #111 !important;
+        background-color: #1e1e1e !important;
         color: white !important;
         border-radius: 6px;
+        border: 1px solid #333;
+        padding: 10px;
     }
 
     /* Progress Bar */
@@ -68,26 +65,20 @@ st.markdown(
         background-color: #FFD700 !important;
     }
 
-    /* Table text (fallback) */
-    .css-1d391kg, .css-1cpxqw2, .st-bb {
-        background-color: #111 !important;
-        color: white !important;
-    }
-
-    /* Slider track and handle */
-    .stSlider > div > div > div {
+    /* Slider track */
+    .stSlider > div[data-baseweb="slider"] {
         background-color: #FFD700 !important;
     }
 
-    /* Warnings or captions */
+    /* Caption text */
     .stMarkdown small, .stCaption {
         color: #AAAAAA;
-        font-size: 0.85rem;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 # --------------------------
 #Scraping Logic
 
