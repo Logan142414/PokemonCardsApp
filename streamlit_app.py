@@ -8,6 +8,15 @@ import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+st.markdown(
+    """
+    <style>
+    ... [CSS above]
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # --------------------------
 #Scraping Logic
 
