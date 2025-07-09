@@ -11,9 +11,9 @@ from zoneinfo import ZoneInfo
 st.markdown(
     """
     <style>
-    /* Global background + font */
+    /* Global layout */
     body, .stApp {
-        background-color: #181818;  /* Softer dark background */
+        background-color: #2a2a2a;  /* Brighter dark gray */
         color: #FFFFFF;
         font-family: 'Segoe UI', sans-serif;
     }
@@ -23,38 +23,39 @@ st.markdown(
         color: #FFFFFF;
     }
 
-    /* Sidebar background */
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: #800000;  /* Maroon sidebar */
         color: white;
     }
 
-    /* Sidebar label text (e.g. "Min PSA 10 Price") */
+    /* Sidebar label text */
     .st-c2, .st-c3, label, .stTextInput label, .stNumberInput label {
         color: white !important;
         font-weight: 500;
     }
 
-    /* Sliders and number inputs */
+    /* Sidebar sliders and inputs – remove yellow */
     .stSlider > div[data-baseweb="slider"] {
-        background-color: #FFD700 !important;
+        background-color: #555 !important;
     }
 
-    /* Checkboxes and inputs */
+    /* Inputs and checkboxes */
     .stCheckbox, .stTextInput, .stNumberInput {
         color: white !important;
     }
 
     /* Buttons */
     .stButton > button {
-        background-color: #333 !important;
+        background-color: #444 !important;
         color: white !important;
         border: 1px solid #666;
         border-radius: 6px;
     }
+
     .stButton > button:hover {
-        background-color: #555 !important;
-        color: #FFD700 !important;
+        background-color: #666 !important;
+        color: #ffffff !important;
     }
 
     /* Download Button */
@@ -64,23 +65,23 @@ st.markdown(
         border-radius: 6px;
     }
 
-    /* Data Table background */
+    /* DataFrame background */
     .stDataFrame {
-        background-color: #222 !important;
+        background-color: #1e1e1e !important;
         color: white !important;
         border-radius: 6px;
         border: 1px solid #333;
         padding: 10px;
     }
 
-    /* Progress bar color */
+    /* Progress bar style (streamlit default blue left intact) */
     .stProgress > div > div {
-        background-color: #FFD700 !important;
+        background-color: #1f77b4 !important;
     }
 
-    /* Caption / Footnote text */
+    /* Footnotes / Captions */
     .stMarkdown small, .stCaption {
-        color: #AAAAAA;
+        color: #CCCCCC;
     }
     </style>
     """,
