@@ -18,18 +18,23 @@ st.markdown(
         font-family: 'Segoe UI', sans-serif;
     }
 
-    /* Header text */
+    /* Main headers */
     h1, h2, h3, h4, h5 {
         color: #FFFFFF;
     }
 
-    /* Sidebar */
+    /* Sidebar - now maroon */
     section[data-testid="stSidebar"] {
-        background-color: #1f1f1f;
+        background-color: #800000;
         color: white;
     }
-    .st-c2, .stCheckbox, .stSlider {
+
+    /* Sidebar text, sliders, and checkboxes */
+    .st-c2, .stCheckbox, .stSlider, .stTextInput {
         color: white !important;
+    }
+    .stSlider > div[data-baseweb="slider"] {
+        background-color: #FFD700 !important;
     }
 
     /* Buttons */
@@ -51,7 +56,7 @@ st.markdown(
         border-radius: 6px;
     }
 
-    /* Table (DataFrame) */
+    /* Data Table */
     .stDataFrame {
         background-color: #1e1e1e !important;
         color: white !important;
@@ -60,17 +65,12 @@ st.markdown(
         padding: 10px;
     }
 
-    /* Progress Bar */
+    /* Progress bar highlight */
     .stProgress > div > div {
         background-color: #FFD700 !important;
     }
 
-    /* Slider track */
-    .stSlider > div[data-baseweb="slider"] {
-        background-color: #FFD700 !important;
-    }
-
-    /* Caption text */
+    /* Caption / Footnote text */
     .stMarkdown small, .stCaption {
         color: #AAAAAA;
     }
