@@ -100,6 +100,10 @@ st.markdown(
     .stMarkdown small, .stCaption {
         color: #CCCCCC;
     }
+    input[type="number"], input[type="text"] {
+    color: black !important;
+    background-color: white !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
