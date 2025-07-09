@@ -29,15 +29,32 @@ st.markdown(
         color: white;
     }
 
-    /* Sidebar label text */
-    .st-c2, .st-c3, label, .stTextInput label, .stNumberInput label {
-        color: white !important;
-        font-weight: 500;
+    /* Sidebar slider container */
+    section[data-testid="stSidebar"] .stSlider {
+        background-color: #800000 !important;  /* Match sidebar */
+        padding: 0.5rem;
+        border-radius: 6px;
     }
 
-    /* Sidebar sliders and inputs – remove yellow */
-    .stSlider > div[data-baseweb="slider"] {
-        background-color: #555 !important;
+    /* Slider track and handle */
+    .stSlider .rc-slider-track {
+        background-color: #ffcccc !important;
+    }
+
+    .stSlider .rc-slider-handle {
+        background-color: white !important;
+        border: 2px solid #ff6666 !important;
+    }
+
+    .stSlider .rc-slider-mark-text {
+        color: white !important;
+        font-weight: bold;
+    }
+
+    /* Sidebar label text */
+    label, .st-c2, .st-c3, .stCheckbox > label {
+        color: white !important;
+        font-weight: 500;
     }
 
     /* Inputs and checkboxes */
@@ -65,7 +82,7 @@ st.markdown(
         border-radius: 6px;
     }
 
-    /* DataFrame background */
+    /* DataFrame styling */
     .stDataFrame {
         background-color: #1e1e1e !important;
         color: white !important;
@@ -74,44 +91,19 @@ st.markdown(
         padding: 10px;
     }
 
-    /* Progress bar style */
+    /* Progress bar */
     .stProgress > div > div {
         background-color: #1f77b4 !important;
     }
 
-    /* Footnotes / Captions */
+    /* Caption / Footnotes */
     .stMarkdown small, .stCaption {
         color: #CCCCCC;
     }
-
-    /* Slider background fix inside sidebar */
-    div[data-testid="stSidebar"] .stSlider > div[data-baseweb="slider"] {
-        background-color: #800000 !important;
-        padding: 0.5rem;
-        border-radius: 6px;
-    }
-
-    /* Adjust slider rail and handles */
-    div[data-testid="stSidebar"] .stSlider .rc-slider-track {
-        background-color: #ffcccc !important;
-    }
-
-    div[data-testid="stSidebar"] .stSlider .rc-slider-handle {
-        background-color: white !important;
-        border: 2px solid #ff6666 !important;
-    }
-
-    /* Slider value labels */
-    div[data-testid="stSidebar"] .stSlider .rc-slider-mark-text {
-        color: white !important;
-        font-weight: bold;
-    }
-
     </style>
     """,
     unsafe_allow_html=True
 )
-
 # --------------------------
 #Scraping Logic
 
