@@ -11,7 +11,33 @@ from zoneinfo import ZoneInfo
 st.markdown(
     """
     <style>
-    ... [CSS above]
+        body {
+            background-color: #000000;
+            color: white;
+        }
+        .stApp {
+            background-color: #000000;
+            color: white;
+        }
+        /* Sidebar */
+        .css-1d391kg, .css-1cpxqw2, .st-bb {
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+        /* Buttons */
+        .stButton>button {
+            background-color: #333 !important;
+            color: white !important;
+        }
+        .stDownloadButton>button {
+            background-color: #444 !important;
+            color: white !important;
+        }
+        /* Table background */
+        .stDataFrame {
+            background-color: #111 !important;
+            color: white !important;
+        }
     </style>
     """,
     unsafe_allow_html=True
