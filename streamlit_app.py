@@ -21,6 +21,8 @@ st.markdown(
     /* Main headers */
     h1, h2, h3, h4, h5 {
         color: #FFFFFF;
+        margin: 0;
+        padding-bottom: 0.5rem;
     }
 
     /* Sidebar */
@@ -52,13 +54,18 @@ st.markdown(
     }
 
     /* Sidebar label text */
-    label, .st-c2, .st-c3, .stCheckbox > label {
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] .st-c2,
+    section[data-testid="stSidebar"] .st-c3,
+    section[data-testid="stSidebar"] .stCheckbox > label {
         color: white !important;
         font-weight: 500;
     }
 
-    /* Inputs and checkboxes */
-    .stCheckbox, .stTextInput, .stNumberInput {
+    /* Inputs and checkboxes in sidebar */
+    section[data-testid="stSidebar"] .stCheckbox,
+    section[data-testid="stSidebar"] .stTextInput,
+    section[data-testid="stSidebar"] .stNumberInput {
         color: white !important;
     }
 
@@ -100,9 +107,11 @@ st.markdown(
     .stMarkdown small, .stCaption {
         color: #CCCCCC;
     }
+
+    /* Input fields text color */
     input[type="number"], input[type="text"] {
-    color: black !important;
-    background-color: white !important;
+        color: black !important;
+        background-color: white !important;
     }
     </style>
     """,
