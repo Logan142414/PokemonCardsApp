@@ -338,10 +338,10 @@ min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
 min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
 
 # --------------------------
-# 3-day, 7-day, and 14-day Ungraded Price Change Filters
+# 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
 change_filters = {}
 
-for days in [3, 7, 14]:
+for days in [3, 7, 14, 30]: 
     col_name = f"Ungraded_{days}d_Change"
     if col_name in df.columns:
         min_val, max_val = st.sidebar.slider(
@@ -353,7 +353,6 @@ for days in [3, 7, 14]:
         )
         change_filters[col_name] = (min_val, max_val)
     else:
-        # Default full range if column not present
         change_filters[col_name] = (-100.0, 100.0)
 
 # --------------------------
@@ -438,7 +437,7 @@ if not history_df.empty:
 
     df = latest_prices.copy()  # start with latest prices
 
-    for days in [3, 7, 14]:
+    for days in [3, 7, 14, 30]:   # added 30
         prior = history_df[history_df["Date"] <= latest_date - pd.Timedelta(days=days)]
         if not prior.empty:
             prior_prices = (
@@ -456,9 +455,6 @@ if not history_df.empty:
             )
 
             df[f"Ungraded_{days}d_Change"] = df["Ungraded_Price"] - merged[f"Ungraded_Price_{days}d_ago"]
-
-
-
 
 # Apply same filters to history
 history_filtered = df[
@@ -482,4 +478,3 @@ st.download_button(
 
 st.markdown("---")
 st.markdown("Built by Logan Laszewski")
-
