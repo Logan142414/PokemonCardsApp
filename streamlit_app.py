@@ -227,10 +227,11 @@ def load_data():
 # App UI
 # --------------------------
 # Title with logos on both sides
+# App UI: Title with logos
 col1, col2, col3 = st.columns([1, 6, 1])
 
 with col1:
-    st.image("pikachu-running.png", use_container_width = True)
+    st.image("pikachu-running.png", use_container_width=True)
 
 with col2:
     st.markdown(
@@ -238,16 +239,16 @@ with col2:
         unsafe_allow_html=True
     )
     st.markdown(
-    "<div style='text-align: center; font-size: 14px;'>Search Pokémon card prices scraped from PriceCharting and find undervalued cards.</div>",
-    unsafe_allow_html=True
-)
+        "<div style='text-align: center; font-size: 14px;'>Search Pokémon card prices scraped from PriceCharting and find undervalued cards.</div>",
+        unsafe_allow_html=True
+    )
 
 with col3:
-    st.image("Pokeball-removebg-preview.png", use_container_width = True)
+    st.image("Pokeball-removebg-preview.png", use_container_width=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-
+# --------------------------
 # Show refresh button
 if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
@@ -256,39 +257,59 @@ if st.button("Refresh Price Data"):
         if not df_scraped.empty:
             os.makedirs("data", exist_ok=True)
 
-            # ✅ Add today's date column
+            # Add today's date column
             today = datetime.now().strftime("%Y-%m-%d")
             df_scraped["Date"] = today
 
-            # ✅ Save/update growing history file
+            # Save/update growing history file
             history_path = "data/pokemon_price_history.csv"
             if os.path.exists(history_path):
                 old = pd.read_csv(history_path)
-                # only append if this date isn’t already in history
+                # Only append if this date isn’t already in history
                 if today not in old["Date"].astype(str).values:
                     combined = pd.concat([old, df_scraped], ignore_index=True)
                     combined.to_csv(history_path, index=False)
             else:
                 df_scraped.to_csv(history_path, index=False)
 
-            # ✅ Still save latest snapshot (your app depends on this)
+            # Still save latest snapshot (your app depends on this)
             df_scraped.to_csv("data/latest_pokemon_prices.csv", index=False)
 
             st.success("Data refreshed!")
-            df = df_scraped  # use the scraped data immediately
+            df = df_scraped  # ✅ assign top-level, do not return
         else:
             st.error("Scraping failed or returned no data.")
             st.stop()
-        return df
 
-df = get_valid_data()
+# --------------------------
+# Load existing data if not refreshed
+@st.cache_data
+def get_valid_data():
+    df = load_data()  # Your load_data() function
 
+    required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
+    if df.empty or not required_cols.issubset(df.columns):
+        df = scrape_pricecharting_data()
+        if not df.empty:
+            os.makedirs("data", exist_ok=True)
+            df.to_csv("data/latest_pokemon_prices.csv", index=False)
+        else:
+            st.error("Scraping failed. Please try again.")
+            st.stop()
+
+    return df
+
+# Only load from saved file if button hasn't just refreshed
+if "df" not in locals():  # avoid overwriting freshly scraped df
+    df = get_valid_data()
+
+# --------------------------
 # Process columns
 df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
 df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
+
 eastern_time = datetime.now(ZoneInfo("America/New_York"))
 st.caption(f"🕒 Data last updated: {eastern_time.strftime('%Y-%m-%d %H:%M')}")
-
 
 # Convert price columns to numeric if needed
 price_cols = ["Ungraded_Price", "Grade_9_Price", "PSA_10_Price"]
