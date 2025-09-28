@@ -337,20 +337,27 @@ min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", min_value=0
 min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
 min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
 
-# 7-day Ungraded Price Change Filter
-# Only add slider if the column exists
-if "Ungraded_7d_Change" in df.columns:
-    min_change, max_change = st.sidebar.slider(
-        "7-Day Ungraded Price Change ($)",
-        min_value=-100.0,
-        max_value=100.0,
-        value=(-100.0, 100.0),
-        step=0.01
-    )
-else:
-    # Default full range if column not present
-    min_change, max_change = -100.0, 100.0
+# --------------------------
+# 3-day, 7-day, and 14-day Ungraded Price Change Filters
+change_filters = {}
 
+for days in [3, 7, 14]:
+    col_name = f"Ungraded_{days}d_Change"
+    if col_name in df.columns:
+        min_val, max_val = st.sidebar.slider(
+            f"{days}-Day Ungraded Price Change ($)",
+            min_value=-100.0,
+            max_value=100.0,
+            value=(-100.0, 100.0),
+            step=0.01
+        )
+        change_filters[col_name] = (min_val, max_val)
+    else:
+        # Default full range if column not present
+        change_filters[col_name] = (-100.0, 100.0)
+
+# --------------------------
+# Apply all filters
 filtered = df[
     (df["Set"].isin(selected_sets)) &
     (df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
@@ -358,11 +365,10 @@ filtered = df[
     (df["PSA_10_Price"] >= min_psa10)
 ]
 
-# Apply 7-day change filter if column exists
-if "Ungraded_7d_Change" in df.columns:
-    filtered = filtered[
-        filtered["Ungraded_7d_Change"].between(min_change, max_change)
-    ]
+# Apply 3d, 7d, 14d change filters if columns exist
+for col_name, (min_val, max_val) in change_filters.items():
+    if col_name in filtered.columns:
+        filtered = filtered[filtered[col_name].between(min_val, max_val)]
 
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
 
