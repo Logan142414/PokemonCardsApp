@@ -396,13 +396,29 @@ else:
 def convert_df_to_csv(df):
     return df.to_csv(index=False).encode("utf-8")
 
-csv_data = convert_df_to_csv(filtered)
+# Load full history
+history_path = "data/pokemon_price_history.csv"
+if os.path.exists(history_path):
+    history_df = pd.read_csv(history_path)
+else:
+    st.warning("No history file found.")
+    history_df = pd.DataFrame()
+
+# Apply same filters to history
+history_filtered = history_df[
+    (history_df["Set"].isin(selected_sets)) &
+    (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
+    (history_df["Grade_9_Price"] >= min_grade9) &
+    (history_df["PSA_10_Price"] >= min_psa10)
+]
+
+csv_data = convert_df_to_csv(history_filtered)
 
 now = datetime.now().strftime("%Y-%m-%d_%H-%M")
-file_name = f"filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
+file_name = f"history_filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
 
 st.download_button(
-    label="Download filtered data as CSV",
+    label="Download all-time filtered data as CSV",
     data=csv_data,
     file_name=file_name,
     mime="text/csv"
