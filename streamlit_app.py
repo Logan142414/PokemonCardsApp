@@ -249,34 +249,6 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 # Show refresh button
-#if st.button("Refresh Price Data"):
-   # with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
-      #  df_scraped = scrape_pricecharting_data()
-
-       # if not df_scraped.empty:
-           # os.makedirs("data", exist_ok=True)
-           # df_scraped.to_csv("data/latest_pokemon_prices.csv", index=False)
-           # st.success("Data refreshed!")
-           # df = df_scraped  # ✅ use the scraped data immediately
-       # else:
-           # st.error("Scraping failed or returned no data.")
-           # st.stop()
-
-# ✅ Always load from saved file if not scraped
-@st.cache_data
-#def get_valid_data():
-   # df = load_data()
-
-   # required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
-   # if df.empty or not required_cols.issubset(df.columns):
-       # df = scrape_pricecharting_data()
-      #  if not df.empty:
-           # os.makedirs("data", exist_ok=True)
-           # df.to_csv("data/latest_pokemon_prices.csv", index=False)
-      #  else:
-          #  st.error("Scraping failed. Please try again.")
-           # st.stop()
-
 if st.button("Refresh Price Data"):
     with st.spinner("Scraping all Pokémon card sets (this may take up to 5 minutes)..."):
         df_scraped = scrape_pricecharting_data()
