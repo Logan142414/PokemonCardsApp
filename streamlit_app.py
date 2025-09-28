@@ -424,41 +424,35 @@ else:
     st.warning("No history file found.")
     history_df = pd.DataFrame()
 
-# Compute 7-day Ungraded price change
+# Compute 3-day, 7-day, and 14-day Ungraded price changes
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
-
-    # Latest date
     latest_date = history_df["Date"].max()
-
-    # Latest prices
     latest_prices = history_df[history_df["Date"] == latest_date].copy()
 
-    # Prior prices (7 days ago or closest before)
-    prior_7d = history_df[history_df["Date"] <= latest_date - pd.Timedelta(days=7)]
-    if not prior_7d.empty:
-        prior_prices = (
-            prior_7d.groupby("Card_Name")
-            .apply(lambda x: x.sort_values("Date").iloc[-1])
-            .reset_index(drop=True)
-        )
+    df = latest_prices.copy()  # start with latest prices
 
-        # Merge latest with prior to calculate change
-        merged = pd.merge(
-            latest_prices,
-            prior_prices[["Card_Name", "Ungraded_Price"]],
-            on="Card_Name",
-            how="left",
-            suffixes=("", "_7d_ago")
-        )
+    for days in [3, 7, 14]:
+        prior = history_df[history_df["Date"] <= latest_date - pd.Timedelta(days=days)]
+        if not prior.empty:
+            prior_prices = (
+                prior.groupby("Card_Name")
+                .apply(lambda x: x.sort_values("Date").iloc[-1])
+                .reset_index(drop=True)
+            )
 
-        # Compute 7-day change
-        merged["Ungraded_7d_Change"] = merged["Ungraded_Price"] - merged["Ungraded_Price_7d_ago"]
+            merged = pd.merge(
+                df,
+                prior_prices[["Card_Name", "Ungraded_Price"]],
+                on="Card_Name",
+                how="left",
+                suffixes=("", f"_{days}d_ago")
+            )
 
-        # Keep the Date column from latest_prices
-        df = merged.copy()
-    else:
-        df = latest_prices.copy()
+            df[f"Ungraded_{days}d_Change"] = df["Ungraded_Price"] - merged[f"Ungraded_Price_{days}d_ago"]
+
+
+
 
 # Apply same filters to history
 history_filtered = df[
