@@ -404,8 +404,43 @@ else:
     st.warning("No history file found.")
     history_df = pd.DataFrame()
 
+
+# Compute 7-day Ungraded price change
+if not history_df.empty:
+    history_df["Date"] = pd.to_datetime(history_df["Date"])
+
+    # Latest date
+    latest_date = history_df["Date"].max()
+
+    # Latest prices
+    latest_prices = history_df[history_df["Date"] == latest_date].copy()
+
+    # Prior prices (7 days ago or closest before)
+    prior_7d = history_df[history_df["Date"] <= latest_date - pd.Timedelta(days=7)]
+    if not prior_7d.empty:
+        prior_prices = prior_7d.groupby("Card_Name").apply(
+            lambda x: x.sort_values("Date").iloc[-1]
+        ).reset_index(drop=True)
+
+        # Merge latest with prior to calculate change
+        merged = pd.merge(
+            latest_prices,
+            prior_prices[["Card_Name", "Ungraded_Price"]],
+            on="Card_Name",
+            how="left",
+            suffixes=("", "_7d_ago")
+        )
+
+        # Compute 7-day change
+        merged["Ungraded_7d_Change"] = merged["Ungraded_Price"] - merged["Ungraded_Price_7d_ago"]
+
+        # Replace df with merged for display
+        df = merged.copy()
+    else:
+        df = latest_prices.copy()
+
 # Apply same filters to history
-history_filtered = history_df[
+history_filtered = df[
     (history_df["Set"].isin(selected_sets)) &
     (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
     (history_df["Grade_9_Price"] >= min_grade9) &
