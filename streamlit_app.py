@@ -279,7 +279,7 @@ if st.button("Refresh Price Data"):
         else:
             st.error("Scraping failed or returned no data.")
             st.stop()
-return df
+        return df
 
 df = get_valid_data()
 
