@@ -281,9 +281,6 @@ if st.button("Refresh Price Data"):
             st.stop()
 
 
-
-    return df
-
 df = get_valid_data()
 
 # Process columns
