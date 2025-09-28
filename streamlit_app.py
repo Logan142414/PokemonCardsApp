@@ -404,7 +404,6 @@ else:
     st.warning("No history file found.")
     history_df = pd.DataFrame()
 
-
 # Compute 7-day Ungraded price change
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
@@ -418,9 +417,11 @@ if not history_df.empty:
     # Prior prices (7 days ago or closest before)
     prior_7d = history_df[history_df["Date"] <= latest_date - pd.Timedelta(days=7)]
     if not prior_7d.empty:
-        prior_prices = prior_7d.groupby("Card_Name").apply(
-            lambda x: x.sort_values("Date").iloc[-1]
-        ).reset_index(drop=True)
+        prior_prices = (
+            prior_7d.groupby("Card_Name")
+            .apply(lambda x: x.sort_values("Date").iloc[-1])
+            .reset_index(drop=True)
+        )
 
         # Merge latest with prior to calculate change
         merged = pd.merge(
@@ -434,7 +435,7 @@ if not history_df.empty:
         # Compute 7-day change
         merged["Ungraded_7d_Change"] = merged["Ungraded_Price"] - merged["Ungraded_Price_7d_ago"]
 
-        # Replace df with merged for display
+        # Keep the Date column from latest_prices
         df = merged.copy()
     else:
         df = latest_prices.copy()
