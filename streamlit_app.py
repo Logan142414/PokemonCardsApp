@@ -480,7 +480,7 @@ now = datetime.now().strftime("%Y-%m-%d_%H-%M")
 file_name = f"history_filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
 
 st.download_button(
-    label="Download all-time filtered data as CSV",
+    label="Download all-time data as CSV (using current filters)",
     data=csv_data,
     file_name=file_name,
     mime="text/csv"
