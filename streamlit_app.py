@@ -429,16 +429,23 @@ else:
     st.warning("No history file found.")
     history_df = pd.DataFrame()
 
-# Compute 3-day, 7-day, and 14-day Ungraded price changes
+# Work with full history + keep latest snapshot separate
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
     latest_date = history_df["Date"].max()
-    latest_prices = history_df[history_df["Date"] == latest_date].copy()
+    latest_df = history_df[history_df["Date"] == latest_date].copy()
+else:
+    latest_df = pd.DataFrame()
 
-    df = latest_prices.copy()  # start with latest prices
+# Use latest_df for the main app display
+df = latest_df.copy()
 
-    for days in [3, 7, 14, 30]:   # added 30
-        prior = history_df[history_df["Date"] <= latest_date - pd.Timedelta(days=days)]
+# Compute 3, 7, 14, 30 day price changes inside the full history
+if not history_df.empty:
+    for days in [3, 7, 14, 30]:
+        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days)
+        prior = history_df[history_df["Date"] <= prior_cutoff]
+
         if not prior.empty:
             prior_prices = (
                 prior.groupby("Card_Name")
@@ -446,18 +453,20 @@ if not history_df.empty:
                 .reset_index(drop=True)
             )
 
-            merged = pd.merge(
-                df,
+            history_df = pd.merge(
+                history_df,
                 prior_prices[["Card_Name", "Ungraded_Price"]],
                 on="Card_Name",
                 how="left",
                 suffixes=("", f"_{days}d_ago")
             )
 
-            df[f"Ungraded_{days}d_Change"] = df["Ungraded_Price"] - merged[f"Ungraded_Price_{days}d_ago"]
+            history_df[f"Ungraded_{days}d_Change"] = (
+                history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+            )
 
-# Apply same filters to history
-history_filtered = df[
+# Apply filters to the full history (not just latest snapshot)
+history_filtered = history_df[
     (history_df["Set"].isin(selected_sets)) &
     (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
     (history_df["Grade_9_Price"] >= min_grade9) &
