@@ -333,7 +333,7 @@ if not selected_sets:
     st.warning("Please select at least one set.")
     st.stop()
 
-min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", min_value=0.01, max_value=10000.0, value=(0.01, 50), step=0.01)
+min_ungraded, max_ungraded = st.sidebar.slider("Ungraded Price ($)", min_value=0.01, max_value=10000.0, value=(0.01, 50.0), step=0.01)
 min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
 min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
 
