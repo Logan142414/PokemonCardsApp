@@ -18,7 +18,6 @@ st.markdown(
         font-family: 'Segoe UI', sans-serif;
     }
 
-
     /* Main headers */
     h1, h2, h3, h4, h5 {
         color: #FFFFFF;
@@ -109,7 +108,7 @@ st.markdown(
         color: #CCCCCC;
     }
 
-    /* Input fields text color */
+    /* Force input text color black */
     input[type="number"], input[type="text"] {
         color: black !important;
         background-color: white !important;
