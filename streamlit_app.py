@@ -18,6 +18,15 @@ st.markdown(
         font-family: 'Segoe UI', sans-serif;
     }
 
+    /* Style number input boxes */
+    input[type="number"] {
+        color: black !important;        /* Text color when typing */
+        background-color: #f5f5f5 !important;  /* Light gray background */
+        border-radius: 6px;
+        padding: 4px;
+    }
+
+
     /* Main headers */
     h1, h2, h3, h4, h5 {
         color: #FFFFFF;
