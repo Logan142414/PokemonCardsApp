@@ -1,1 +1,7 @@
-
+streamlit==1.50.0
+pandas==2.3.3
+beautifulsoup4==4.14.2
+requests==2.32.5
+huggingface-hub==0.35.3
+langchain==0.3.76
+pydantic==2.11.9
