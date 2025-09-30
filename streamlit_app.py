@@ -528,7 +528,7 @@ llm = HFInferenceLLM(
 
 agent = create_pandas_dataframe_agent(
     llm,
-    df,  # your current all-history dataframe
+    history_df,  # your current all-history dataframe
     verbose=False,
     allow_dangerous_code=True
 )
