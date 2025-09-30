@@ -485,6 +485,43 @@ st.download_button(
     file_name=file_name,
     mime="text/csv"
 )
-
+# --- GenAI Chatbot Section ---
 st.markdown("---")
+st.subheader("GenAI Chatbot")
+
+# Initialize Hugging Face LLM & Pandas Agent
+llm = HFInferenceLLM(
+    model_name="HuggingFaceTB/SmolLM3-3B",
+    api_key=os.environ["HF_TOKEN"]
+)
+
+agent = create_pandas_dataframe_agent(
+    llm,
+    df,  # your current all-history dataframe
+    verbose=False,
+    allow_dangerous_code=True
+)
+
+# Session state to keep chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# User input for chat
+user_input = st.text_input("Ask a question about the dataset:")
+
+if st.button("Ask"):
+    if user_input:
+        with st.spinner("Thinking..."):
+            try:
+                answer = agent.run(user_input)
+                st.session_state.chat_history.append({"user": user_input, "bot": answer})
+            except Exception as e:
+                st.session_state.chat_history.append({"user": user_input, "bot": f"⚠️ Error: {e}"})
+
+# Display chat history
+for chat in st.session_state.chat_history:
+    st.markdown(f"**You:** {chat['user']}")
+    st.markdown(f"**Bot:** {chat['bot']}")
+    st.markdown("---")
+
 st.markdown("Built by Logan Laszewski")
