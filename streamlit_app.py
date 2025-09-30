@@ -291,8 +291,8 @@ if st.button("Refresh Price Data"):
 # --------------------------
 # Load existing data if not refreshed
 @st.cache_data
-def get_valid_data():
-    df = load_data()  # Your load_data() function
+def get_valid_data(today: str):
+    df = load_data()  # load latest_pokemon_prices.csv
 
     required_cols = {"Ungraded_Price", "Grade_9_Price", "PSA_10_Price"}
     if df.empty or not required_cols.issubset(df.columns):
@@ -306,9 +306,8 @@ def get_valid_data():
 
     return df
 
-# Only load from saved file if button hasn't just refreshed
-if "df" not in locals():  # avoid overwriting freshly scraped df
-    df = get_valid_data()
+today = datetime.now().strftime("%Y-%m-%d")
+df = get_valid_data(today)
 
 # --------------------------
 # Process columns
