@@ -112,8 +112,11 @@ st.markdown(
         color: #CCCCCC;
     }
 
-    /* Force input text color black */
-    input[type="number"], input[type="text"] {
+   section[data-testid="stSidebar"] input[type="text"],
+    section[data-testid="stSidebar"] input[type="number"],
+    section[data-testid="stSidebar"] textarea,
+    section[data-testid="stSidebar"] .stTextInput input,
+    section[data-testid="stSidebar"] .stNumberInput input {
         color: black !important;
         background-color: white !important;
     }
