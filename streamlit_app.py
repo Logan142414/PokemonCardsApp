@@ -1,3 +1,7 @@
+import subprocess
+import sys
+
+subprocess.check_call([sys.executable, "-m", "pip", "install", "langchain==0.3.76"])
 import streamlit as st         # for the web app
 import pandas as pd             # for DataFrame manipulation
 import os                       # to access environment variables (HF_TOKEN)
