@@ -420,8 +420,6 @@ else:
        # st.markdown("---")
 
 
-
-st.write("History rows:", len(history_df))
 # --------------------------
 # Download Button
 # --------------------------
