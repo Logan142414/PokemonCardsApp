@@ -493,6 +493,30 @@ st.download_button(
     file_name=file_name,
     mime="text/csv"
 )
+
+# 2. Define Hugging Face LLM Wrapper using chat completions
+class HFInferenceLLM(LLM):
+    model_name: str
+    api_key: str
+    client: InferenceClient = Field(default=None, exclude=True)
+
+    def __init__(self, model_name: str, api_key: str, **kwargs):
+        super().__init__(model_name=model_name, api_key=api_key, **kwargs)
+        self.client = InferenceClient(model_name, token=api_key)
+
+    @property
+    def _llm_type(self) -> str:
+        return "hf-inference"
+
+    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
+        # Use the chat endpoint instead of text_generation
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.choices[0].message["content"]
+
+
 # --- GenAI Chatbot Section ---
 st.markdown("---")
 st.subheader("GenAI Chatbot")
