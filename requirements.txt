@@ -1,7 +1,7 @@
-streamlit
-pandas
-beautifulsoup4
-requests
-langchain
-huggingface-hub
-
+streamlit>=1.30.0
+pandas>=2.1.0
+beautifulsoup4>=4.12.2
+requests>=2.31.0
+pydantic>=1.10.12
+huggingface-hub>=0.16.4
+git+https://github.com/hwchase17/langchain.git@main#egg=langchain
