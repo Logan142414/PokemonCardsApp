@@ -527,8 +527,8 @@ llm = HFInferenceLLM(
 # 2. Build FAISS vector store once
 @st.cache_resource
 def build_vector_store(df):
-    from langchain_community.embeddings import HuggingFaceEmbeddings
-    from langchain_community.vectorstores import FAISS
+    from langchain.embeddings import HuggingFaceEmbeddings
+    from langchain.vectorstores import FAISS
     from langchain.schema import Document
 
     docs = []
