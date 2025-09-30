@@ -518,37 +518,60 @@ class HFInferenceLLM(LLM):
 st.markdown("---")
 st.subheader("GenAI Chatbot")
 
-
-# Initialize Hugging Face LLM & Pandas Agent
+# 1. Initialize Hugging Face LLM (your wrapper still works here)
 llm = HFInferenceLLM(
     model_name="HuggingFaceTB/SmolLM3-3B",
     api_key=os.environ["HF_TOKEN"]
 )
 
-agent = create_pandas_dataframe_agent(
-    llm,
-    history_df,  # your current all-history dataframe
-    verbose=False,
-    allow_dangerous_code=True
-)
+# 2. Build FAISS vector store once
+@st.cache_resource
+def build_vector_store(df):
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    from langchain_community.vectorstores import FAISS
+    from langchain.schema import Document
 
-# Session state to keep chat history
+    docs = []
+    for i, row in df.iterrows():
+        content = " | ".join([f"{col}: {row[col]}" for col in df.columns])
+        docs.append(Document(page_content=content, metadata={"row": i}))
+
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    return FAISS.from_documents(docs, embeddings)
+
+vector_store = build_vector_store(history_df)
+
+# 3. Session state to keep chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# User input for chat
+# 4. User input for chat
 user_input = st.text_input("Ask a question about the dataset:")
 
 if st.button("Ask"):
     if user_input:
         with st.spinner("Thinking..."):
             try:
-                answer = agent.run(user_input)
+                # Search relevant rows
+                docs = vector_store.similarity_search(user_input, k=10)
+                context_text = "\n".join([d.page_content for d in docs])
+
+                # Build prompt
+                prompt = f"""You are a helpful assistant. 
+Here is the most relevant data from the Pokémon card history dataset:
+
+{context_text}
+
+Now answer the question: {user_input}
+"""
+
+                answer = llm(prompt)
+
                 st.session_state.chat_history.append({"user": user_input, "bot": answer})
             except Exception as e:
                 st.session_state.chat_history.append({"user": user_input, "bot": f"⚠️ Error: {e}"})
 
-# Display chat history
+# 5. Display chat history
 for chat in st.session_state.chat_history:
     st.markdown(f"**You:** {chat['user']}")
     st.markdown(f"**Bot:** {chat['bot']}")
