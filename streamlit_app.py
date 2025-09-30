@@ -1,7 +1,4 @@
 import streamlit as st         # for the web app
-# Clears all cached data functions and singletons
-st.cache_data.clear()
-st.cache_resource.clear()
 import pandas as pd             # for DataFrame manipulation
 import os                       # to access environment variables (HF_TOKEN)
 from typing import Optional, List  # for your HFInferenceLLM type hints
@@ -13,7 +10,7 @@ import requests                 # for HTTP requests
 from bs4 import BeautifulSoup   # for HTML parsing
 from datetime import datetime   # for timestamps
 from zoneinfo import ZoneInfo   # for timezone-aware timestamps
-from langchain.agents import create_pandas_dataframe_agent
+import langchain_experimental.agents.create_pandas_dataframe_agent
 
 st.markdown(
     """
