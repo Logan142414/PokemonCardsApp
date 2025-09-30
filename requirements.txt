@@ -2,5 +2,5 @@ streamlit
 pandas 
 beautifulsoup4 
 requests 
-langchain>=0.1.112
+langchain>=0.3.40
 huggingface-hub
