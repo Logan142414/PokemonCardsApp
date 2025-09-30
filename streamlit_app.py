@@ -552,7 +552,8 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # 4. User input for chat
-user_input = st.text_input("Ask a question about the dataset:")
+# Input box with no label
+user_input = st.text_input("", placeholder="Type your question here...", label_visibility="collapsed")
 
 if st.button("Ask"):
     if user_input:
