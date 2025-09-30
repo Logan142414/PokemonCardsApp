@@ -3,5 +3,4 @@ pandas
 beautifulsoup4
 requests
 huggingface-hub
-langchain==0.3.76
-pydantic
+langchain
