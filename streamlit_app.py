@@ -112,6 +112,11 @@ st.markdown(
         color: #CCCCCC;
     }
 
+    /* Make the label text for text_input white */
+    label[for="Ask a question about the dataset:"] {
+        color: white !important;
+    }
+
    section[data-testid="stSidebar"] input[type="text"],
     section[data-testid="stSidebar"] input[type="number"],
     section[data-testid="stSidebar"] textarea,
