@@ -6,3 +6,4 @@ huggingface-hub
 langchain==0.0.234
 pydantic
 tabulate
+sentence-transformers
