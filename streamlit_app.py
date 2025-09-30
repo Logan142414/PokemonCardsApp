@@ -516,6 +516,7 @@ class HFInferenceLLM(LLM):
 st.markdown("---")
 st.subheader("GenAI Chatbot")
 
+
 # Initialize Hugging Face LLM & Pandas Agent
 llm = HFInferenceLLM(
     model_name="HuggingFaceTB/SmolLM3-3B",
