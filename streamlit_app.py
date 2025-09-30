@@ -8,7 +8,7 @@ import os
 from zoneinfo import ZoneInfo
 
 # LangChain imports
-from langchain.agents import create_pandas_dataframe_agent
+from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 from langchain.llms.base import LLM
 from pydantic import Field
 from typing import Optional, List
