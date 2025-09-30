@@ -1,4 +1,7 @@
 import streamlit as st         # for the web app
+# Clears all cached data functions and singletons
+st.cache_data.clear()
+st.cache_resource.clear()
 import pandas as pd             # for DataFrame manipulation
 import os                       # to access environment variables (HF_TOKEN)
 from typing import Optional, List  # for your HFInferenceLLM type hints
