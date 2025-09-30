@@ -522,6 +522,7 @@ class HFInferenceLLM(LLM):
 # --- GenAI Chatbot Section ---
 st.markdown("---")
 st.subheader("GenAI Chatbot")
+st.markdown("Built by Logan Laszewski")
 
 # 1. Initialize Hugging Face LLM (your wrapper still works here)
 llm = HFInferenceLLM(
