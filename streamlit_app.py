@@ -1,3 +1,6 @@
+import langchain
+print(langchain.__version__)
+
 import streamlit as st         # for the web app
 import pandas as pd             # for DataFrame manipulation
 import os                       # to access environment variables (HF_TOKEN)
