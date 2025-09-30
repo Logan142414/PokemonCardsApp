@@ -10,7 +10,7 @@ import requests                 # for HTTP requests
 from bs4 import BeautifulSoup   # for HTML parsing
 from datetime import datetime   # for timestamps
 from zoneinfo import ZoneInfo   # for timezone-aware timestamps
-from langchain.agents import create_pandas_dataframe_agent
+from langchain_experimental.agents import create_pandas_dataframe_agent
 
 st.markdown(
     """
