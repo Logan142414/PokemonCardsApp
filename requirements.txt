@@ -1,6 +1,6 @@
-streamlit
-pandas
-beautifulsoup4
-requests
+streamlit 
+pandas 
+beautifulsoup4 
+requests 
+langchain 
 huggingface-hub
-git+https://github.com/hwchase17/langchain.git@main#egg=langchain
