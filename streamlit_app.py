@@ -11,11 +11,7 @@ from bs4 import BeautifulSoup   # for HTML parsing
 from datetime import datetime   # for timestamps
 from zoneinfo import ZoneInfo   # for timezone-aware timestamps
 from langchain.agents import create_pandas_dataframe_agent
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
+
 
 st.markdown(
     """
@@ -210,8 +206,6 @@ def scrape_pricecharting_data():
     
     return df
     
-
-
 
 # --------------------------
 @st.cache_data
@@ -477,7 +471,7 @@ if not history_df.empty:
             history_df[f"Ungraded_{days}d_Change"] = (
                 history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
             )
-
+####
 # ✅ Extract latest-day snapshot with price change columns for display
 latest_date = history_df["Date"].max()
 latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
@@ -487,7 +481,7 @@ latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.du
 
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
-
+####
 
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
