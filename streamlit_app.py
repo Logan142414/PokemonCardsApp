@@ -403,7 +403,8 @@ if show_images:
 
     st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 else:
-    filtered_display = filtered.drop(columns=["Image_URL"])
+    latest_with_changes = st.session_state.get("latest_with_changes", filtered)
+    filtered_display = latest_with_changes.drop(columns=["Image_URL"], errors="ignore")
     st.dataframe(filtered_display.reset_index(drop=True))
 
 
@@ -475,6 +476,17 @@ if not history_df.empty:
             history_df[f"Ungraded_{days}d_Change"] = (
                 history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
             )
+
+# ✅ Extract latest-day snapshot with price change columns for display
+latest_date = history_df["Date"].max()
+latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
+
+# Prevent duplicate columns from merges
+latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
+
+# Store it in session state for reuse
+st.session_state["latest_with_changes"] = latest_with_changes
+
 
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
