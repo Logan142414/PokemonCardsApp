@@ -438,8 +438,8 @@ else:
     history_df = pd.DataFrame()
 
 # Work with full history + keep latest snapshot separate
-if not history_df.empty:
-    history_df["Date"] = pd.to_datetime(history_df["Date"])
+if not history_df.empty and "Date" in history_df.columns:
+    history_df["Date"] = pd.to_datetime(history_df["Date"], errors="coerce")
     latest_date = history_df["Date"].max()
     latest_df = history_df[history_df["Date"] == latest_date].copy()
 else:
