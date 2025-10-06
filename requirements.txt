@@ -8,3 +8,5 @@ pydantic
 tabulate
 sentence-transformers
 faiss-cpu
+selenium
+webdriver-manager
