@@ -137,89 +137,77 @@ st.markdown(
 # --------------------------
 #Scraping Logic
 
+def scrape_pricecharting_data(): 
+    BASE_URL = "https://www.pricecharting.com" 
+    CATEGORY_URL = f"{BASE_URL}/category/pokemon-cards" 
+    headers = {"User-Agent": "Mozilla/5.0"} 
+    try: 
+        res = requests.get(CATEGORY_URL, headers=headers) 
+        soup = BeautifulSoup(res.text, 'html.parser') 
+    except Exception as e: 
+        st.error("Error fetching category page.") 
+        return pd.DataFrame() 
+    
+    # Get all set links 
+    set_links = soup.select('a[href^="/console/pokemon"]') 
+    set_urls = list(set(BASE_URL + link["href"] for link in set_links)) 
 
-def scrape_pricecharting_data():
-    BASE_URL = "https://www.pricecharting.com"
-    CATEGORY_URL = f"{BASE_URL}/category/pokemon-cards"
-
-    # Selenium options for headless browser
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-    try:
-        driver.get(CATEGORY_URL)
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[href^='/console/pokemon']"))
-        )
-        set_links = driver.find_elements(By.CSS_SELECTOR, "a[href^='/console/pokemon']")
-        set_urls = list(set(link.get_attribute("href") for link in set_links))
-
-        # Remove Japanese or Chinese sets
-        set_urls = [url for url in set_urls if "japanese" not in url.lower() and "chinese" not in url.lower()]
-
-    except Exception as e:
-        st.error(f"Error fetching category page: {e}")
-        driver.quit()
-        return pd.DataFrame()
-
-    all_data = []
-    progress = st.progress(0)
-
-    for i, url in enumerate(set_urls):
-        try:
-            driver.get(url)
-            # Wait for table rows to render
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tbody tr[data-product]"))
-            )
-
-            rows = driver.find_elements(By.CSS_SELECTOR, "tbody tr[data-product]")
-
-            for row in rows:
-                cols = row.find_elements(By.TAG_NAME, "td")
-                if len(cols) >= 5:
-                    img_tag = cols[0].find_element(By.TAG_NAME, "img") if cols[0].find_elements(By.TAG_NAME, "img") else None
-                    img_url = img_tag.get_attribute("src") if img_tag else ""
-
-                    name = cols[1].text.strip()
-                    ungraded = cols[2].text.strip().replace("$", "").replace(",", "")
-                    grade9 = cols[3].text.strip().replace("$", "").replace(",", "")
-                    psa10 = cols[4].text.strip().replace("$", "").replace(",", "")
-
+    # Remove Japanese sets for now. Scrape takes too long otherwise 
+    set_urls = [url for url in set_urls if "japanese" not in url.lower()] 
+    
+    all_data = [] 
+    progress = st.progress(0) 
+    for i, url in enumerate(set_urls): 
+        try: 
+            res = requests.get(url, headers=headers) 
+            soup = BeautifulSoup(res.text, 'html.parser') 
+        
+            rows = soup.select('table tr') 
+            for row in rows: 
+                cols = row.find_all('td') 
+                if len(cols) >= 5: 
+                    img_tag = cols[0].find("img") 
+                
+                    if img_tag and "src" in img_tag.attrs: 
+                        img_url = img_tag["src"] 
+                    else: 
+                        img_url = "" 
+                
+                    name = cols[1].text.strip() 
+                    ungraded = cols[2].text.strip().replace("$", "").replace(",", "") 
+                
+                    grade9 = cols[3].text.strip().replace("$", "").replace(",", "") 
+                
+                    psa10 = cols[4].text.strip().replace("$", "").replace(",", "") 
+                
                     all_data.append({
-                        "Set": url.split("/")[-1],
-                        "Card_Name": name,
-                        "Ungraded_Price": ungraded,
-                        "Grade_9_Price": grade9,
-                        "PSA_10_Price": psa10,
-                        "Image_URL": img_url
-                    })
+                        "Set": url.split('/')[-1], 
+                        "Card_Name": name, 
+                        "Ungraded_Price": ungraded, 
+                        "Grade_9_Price": grade9, 
+                        "PSA_10_Price": psa10, 
+                        "Image_URL": img_url 
+                    }) 
+        except Exception as e: 
+            st.warning(f"Error scraping {url}: {e}") 
+            continue 
+        
+        progress.progress((i + 1) / len(set_urls)) 
+        time.sleep(0.3) 
+    
+    # Turn into DataFrame 
+    df = pd.DataFrame(all_data) 
 
-        except Exception as e:
-            st.warning(f"Error scraping {url}: {e}")
-            continue
+    if df.empty: 
+        return df 
 
-        progress.progress((i + 1) / len(set_urls))
-
-    driver.quit()
-
-    # Turn into DataFrame
-    df = pd.DataFrame(all_data)
-    if df.empty:
-        return df
-
-    # Ensure correct column types
-    for col in ["Ungraded_Price", "Grade_9_Price", "PSA_10_Price"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
-
-    df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"]
-    df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False)
-
+    # Ensure correct column types 
+    for col in ["Ungraded_Price", "Grade_9_Price", "PSA_10_Price"]: 
+        df[col] = pd.to_numeric(df[col], errors="coerce") 
+    
+    df["Deal_Value"] = df["Grade_9_Price"] - df["Ungraded_Price"] 
+    df["Set"] = df["Set"].str.replace("pokemon-", "", regex=False) 
+    
     return df
     
 
