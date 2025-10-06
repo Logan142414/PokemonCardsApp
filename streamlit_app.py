@@ -164,9 +164,10 @@ def scrape_pricecharting_data():
                 res = requests.get(page_url, headers=headers)
                 soup = BeautifulSoup(res.text, 'html.parser')
 
-                rows = soup.select('tbody tr')
+                # Only grab rows with actual product data
+                rows = soup.select('tbody tr[data-product]')
                 if not rows:
-                    break
+                    break  # stop if no more cards
 
                 for row in rows:
                     cols = row.find_all('td')
@@ -187,11 +188,6 @@ def scrape_pricecharting_data():
                             "PSA_10_Price": psa10,
                             "Image_URL": img_url
                         })
-
-                # Stop if no "next" page
-                next_link = soup.select_one("a.next_page")
-                if not next_link:
-                    break
 
                 page += 1
                 time.sleep(0.3)
