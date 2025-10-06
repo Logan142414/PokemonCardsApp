@@ -460,15 +460,15 @@ if not history_df.empty:
 
         if not prior.empty:
             prior_prices = (
-                prior.groupby("Card_Name")
+                prior.groupby(["Set", "Card_Name"])
                 .apply(lambda x: x.sort_values("Date").iloc[-1])
                 .reset_index(drop=True)
             )
 
             history_df = pd.merge(
                 history_df,
-                prior_prices[["Card_Name", "Ungraded_Price"]],
-                on="Card_Name",
+                prior_prices[["Set","Card_Name", "Ungraded_Price"]],
+                on=["Set","Card_Name"],
                 how="left",
                 suffixes=("", f"_{days}d_ago")
             )
