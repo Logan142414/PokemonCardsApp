@@ -392,9 +392,11 @@ else:
     ]
 
     # Apply 3/7/14/30 day change filters
-    for col_name, (min_val, max_val) in change_filters.items():
-        if col_name in filtered_display.columns:
-            filtered_display = filtered_display[filtered_display[col_name].between(min_val, max_val)]
+    for col_name, val in change_filters.items():
+        if isinstance(val, tuple) and len(val) == 2:
+            min_val, max_val = val
+            if col_name in filtered_display.columns:
+                filtered_display = filtered_display[filtered_display[col_name].between(min_val, max_val)]
 
     st.dataframe(filtered_display.reset_index(drop=True))
 
