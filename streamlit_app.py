@@ -346,24 +346,6 @@ min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
 min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
 
 # --------------------------
-# 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
-change_filters = {}
-
-for days in [3, 7, 14, 30]: 
-    col_name = f"Ungraded_{days}d_Change"
-    if col_name in latest_with_changes.columns:
-        min_val, max_val = st.sidebar.slider(
-            f"{days}-Day Ungraded Price Change ($)",
-            min_value=-100.0,
-            max_value=100.0,
-            value=(-100.0, 100.0),
-            step=0.01
-        )
-        change_filters[col_name] = (min_val, max_val)
-    else:
-        change_filters[col_name] = (-100.0, 100.0)
-
-# --------------------------
 # Apply all filters
 filtered = df[
     (df["Set"].isin(selected_sets)) &
@@ -495,7 +477,24 @@ latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.du
 
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
+
 ####
+# 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
+change_filters = {}
+
+for days in [3, 7, 14, 30]: 
+    col_name = f"Ungraded_{days}d_Change"
+    if col_name in latest_with_changes.columns:
+        min_val, max_val = st.sidebar.slider(
+            f"{days}-Day Ungraded Price Change ($)",
+            min_value=-100.0,
+            max_value=100.0,
+            value=(-100.0, 100.0),
+            step=0.01
+        )
+        change_filters[col_name] = (min_val, max_val)
+    else:
+        change_filters[col_name] = (-100.0, 100.0)
 
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
