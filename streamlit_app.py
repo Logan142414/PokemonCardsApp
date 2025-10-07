@@ -449,7 +449,7 @@ else:
 
 # Use latest_df for the main app display
 
-                history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+    history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
             )
 
 # ✅ Extract latest-day snapshot with price change columns for display
