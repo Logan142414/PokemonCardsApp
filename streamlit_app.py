@@ -357,9 +357,9 @@ for days in [3, 7, 14, 30]:
     # Sliders always show
     min_val, max_val = st.sidebar.slider(
         f"{days}-Day Ungraded Price Change ($)",
-        min_value=-100.0,
-        max_value=100.0,
-        value=(-100.0, 100.0),
+        min_value=-1000.0,
+        max_value=1000.0,
+        value=(-1000.0, 1000.0),
         step=0.01
     )
     # Store the values, we’ll use them conditionally
