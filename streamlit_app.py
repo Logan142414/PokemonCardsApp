@@ -554,7 +554,7 @@ def build_vector_store(df):
         content = " | ".join([f"{col}: {row[col]}" for col in df.columns])
         docs.append(Document(page_content=content, metadata={"row": i}))
 
-    Embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return FAISS.from_documents(docs, embeddings)
 
 vector_store = build_vector_store(history_filtered)
