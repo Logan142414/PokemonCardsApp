@@ -480,6 +480,10 @@ latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.du
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
 
+# Use for main display & filters
+df = latest_with_changes.copy()
+
+
 ####
 # 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
 
