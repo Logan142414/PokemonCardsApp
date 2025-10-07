@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup   # for HTML parsing
 from datetime import datetime   # for timestamps
 from zoneinfo import ZoneInfo   # for timezone-aware timestamps
 from langchain.agents import create_pandas_dataframe_agent
-
+change_filters = {}
 
 st.markdown(
     """
@@ -482,7 +482,6 @@ st.session_state["latest_with_changes"] = latest_with_changes
 
 ####
 # 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
-change_filters = {}
 
 for days in [3, 7, 14, 30]: 
     col_name = f"Ungraded_{days}d_Change"
