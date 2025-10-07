@@ -355,9 +355,9 @@ filtered = df[
 ]
 
 # Apply 3d, 7d, 14d change filters if columns exist
-for col_name, (min_val, max_val) in change_filters.items():
-    if col_name in filtered.columns:
-        filtered = filtered[filtered[col_name].between(min_val, max_val)]
+#for col_name, (min_val, max_val) in change_filters.items():
+  # if col_name in filtered.columns:
+       # filtered = filtered[filtered[col_name].between(min_val, max_val)]
 
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
 
@@ -392,11 +392,11 @@ else:
     ]
 
     # Apply 3/7/14/30 day change filters
-    for col_name, val in change_filters.items():
-        if isinstance(val, tuple) and len(val) == 2:
-            min_val, max_val = val
-            if col_name in filtered_display.columns:
-                filtered_display = filtered_display[filtered_display[col_name].between(min_val, max_val)]
+    #for col_name, val in change_filters.items():
+       # if isinstance(val, tuple) and len(val) == 2:
+          #  min_val, max_val = val
+           # if col_name in filtered_display.columns:
+              #  filtered_display = filtered_display[filtered_display[col_name].between(min_val, max_val)]
 
     st.dataframe(filtered_display.reset_index(drop=True))
 
@@ -483,19 +483,19 @@ st.session_state["latest_with_changes"] = latest_with_changes
 ####
 # 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
 
-for days in [3, 7, 14, 30]: 
-    col_name = f"Ungraded_{days}d_Change"
-    if col_name in latest_with_changes.columns:
-        min_val, max_val = st.sidebar.slider(
-            f"{days}-Day Ungraded Price Change ($)",
-            min_value=-100.0,
-            max_value=100.0,
-            value=(-100.0, 100.0),
-            step=0.01
-        )
-        change_filters[col_name] = (min_val, max_val)
-    else:
-        change_filters[col_name] = (-100.0, 100.0)
+#for days in [3, 7, 14, 30]: 
+   # col_name = f"Ungraded_{days}d_Change"
+   #if col_name in latest_with_changes.columns:
+       # min_val, max_val = st.sidebar.slider(
+           # f"{days}-Day Ungraded Price Change ($)",
+           # min_value=-100.0,
+           # max_value=100.0,
+           # value=(-100.0, 100.0),
+           # step=0.01
+       # )
+       # change_filters[col_name] = (min_val, max_val)
+   # else:
+      #  change_filters[col_name] = (-100.0, 100.0)
 
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
