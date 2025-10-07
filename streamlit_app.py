@@ -380,8 +380,6 @@ if show_images:
     styled_df = styled_df[cols]
 
     st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-else:
-    filtered_display = latest_df.copy()
 
     # Apply selected sets and price filters
     filtered_display = filtered_display[
