@@ -549,3 +549,23 @@ if st.button("Ask"):
                 # Search relevant rows
                 docs = vector_store.similarity_search(user_input, k=10)
                 context_text = "\n".join([d.page_content for d in docs])
+                # Build prompt
+                prompt = f"""You are a helpful assistant. 
+Here is the most relevant data from the Pokémon card history dataset:
+
+{context_text}
+
+Now answer the question: {user_input}
+"""
+
+                answer = llm(prompt)
+
+                st.session_state.chat_history.append({"user": user_input, "bot": answer})
+            except Exception as e:
+                st.session_state.chat_history.append({"user": user_input, "bot": f"⚠️ Error: {e}"})
+
+# 5. Display chat history
+for chat in st.session_state.chat_history:
+    st.markdown(f"**You:** {chat['user']}")
+    st.markdown(f"**Bot:** {chat['bot']}")
+    st.markdown("---")
