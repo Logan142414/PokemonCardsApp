@@ -484,6 +484,8 @@ latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
 # Prevent duplicate columns from merges
 latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
 
+df = latest_with_changes.copy()
+
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
 
