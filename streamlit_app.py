@@ -381,7 +381,7 @@ if show_images:
 
     st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 else:
-    filtered_display = latest_with_changes.copy()
+    filtered_display = latest_df.copy()
 
     # Apply selected sets and price filters
     filtered_display = filtered_display[
