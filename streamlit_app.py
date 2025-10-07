@@ -351,7 +351,7 @@ change_filters = {}
 
 for days in [3, 7, 14, 30]: 
     col_name = f"Ungraded_{days}d_Change"
-    if col_name in df.columns:
+    if col_name in latest_with_changes.columns:
         min_val, max_val = st.sidebar.slider(
             f"{days}-Day Ungraded Price Change ($)",
             min_value=-100.0,
@@ -399,8 +399,21 @@ if show_images:
 
     st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 else:
-    latest_with_changes = st.session_state.get("latest_with_changes", filtered)
-    filtered_display = latest_with_changes.drop(columns=["Image_URL"], errors="ignore")
+    filtered_display = latest_with_changes.copy()
+
+    # Apply selected sets and price filters
+    filtered_display = filtered_display[
+        (filtered_display["Set"].isin(selected_sets)) &
+        (filtered_display["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
+        (filtered_display["Grade_9_Price"] >= min_grade9) &
+        (filtered_display["PSA_10_Price"] >= min_psa10)
+    ]
+
+    # Apply 3/7/14/30 day change filters
+    for col_name, (min_val, max_val) in change_filters.items():
+        if col_name in filtered_display.columns:
+            filtered_display = filtered_display[filtered_display[col_name].between(min_val, max_val)]
+
     st.dataframe(filtered_display.reset_index(drop=True))
 
 
