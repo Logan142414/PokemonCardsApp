@@ -352,20 +352,18 @@ min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
 # --------------------------
 # 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
 change_filters = {}
-
-for days in [3, 7, 14, 30]: 
+for days in [3, 7, 14, 30]:
     col_name = f"Ungraded_{days}d_Change"
-    if col_name in df.columns:
-        min_val, max_val = st.sidebar.slider(
-            f"{days}-Day Ungraded Price Change ($)",
-            min_value=-100.0,
-            max_value=100.0,
-            value=(-100.0, 100.0),
-            step=0.01
-        )
-        change_filters[col_name] = (min_val, max_val)
-    else:
-        change_filters[col_name] = (-100.0, 100.0)
+    # Sliders always show
+    min_val, max_val = st.sidebar.slider(
+        f"{days}-Day Ungraded Price Change ($)",
+        min_value=-100.0,
+        max_value=100.0,
+        value=(-100.0, 100.0),
+        step=0.01
+    )
+    # Store the values, we’ll use them conditionally
+    change_filters[col_name] = (min_val, max_val)
 
 # --------------------------
 # Apply all filters
