@@ -327,84 +327,6 @@ price_cols = ["Ungraded_Price", "Grade_9_Price", "PSA_10_Price"]
 for col in price_cols:
     df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# --------------------------
-# Filter Controls
-# --------------------------
-st.sidebar.header("Filter Options")
-
-all_sets = sorted(df["Set"].unique())
-select_all_sets = st.sidebar.checkbox("Select all sets", value=True)
-
-if select_all_sets:
-    selected_sets = all_sets
-else:
-    selected_sets = st.sidebar.multiselect("Choose Set(s)", options=all_sets)
-
-if not selected_sets:
-    st.warning("Please select at least one set.")
-    st.stop()
-
-min_ungraded = st.sidebar.number_input("Min price ($)", min_value=0.01, max_value=10000.0, value=0.01, step=0.01)
-max_ungraded = st.sidebar.number_input("Max price ($)", min_value=0.01, max_value=10000.0, value=10000.0, step=0.01)
-min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
-min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
-
-# --------------------------
-# 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
-change_filters = {}
-for days in [3, 7, 14, 30]:
-    col_name = f"Ungraded_{days}d_Change"
-    # Sliders always show
-    min_val, max_val = st.sidebar.slider(
-        f"{days}-Day Ungraded Price Change ($)",
-        min_value=-1000.0,
-        max_value=1000.0,
-        value=(-1000.0, 1000.0),
-        step=0.01
-    )
-    # Store the values, we’ll use them conditionally
-    change_filters[col_name] = (min_val, max_val)
-
-# --------------------------
-# Apply all filters
-filtered = df[
-    (df["Set"].isin(selected_sets)) &
-    (df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
-    (df["Grade_9_Price"] >= min_grade9) &
-    (df["PSA_10_Price"] >= min_psa10)
-]
-
-# Apply 3d, 7d, 14d change filters if columns exist
-for col_name, (min_val, max_val) in change_filters.items():
-    if col_name in filtered.columns:
-        filtered = filtered[filtered[col_name].between(min_val, max_val)]
-
-st.subheader(f"Filtered Results ({len(filtered)} cards)")
-
-# Add a sidebar checkbox to control image column visibility
-# Warn users before enabling thumbnails
-st.sidebar.caption("⚠️ Enabling image thumbnails may slow down loading or cause images to fail.")
-show_images = st.sidebar.checkbox("Show image thumbnails", value=False)
-
-if show_images:
-    # Create image column with HTML <img> tag wrapped in a link
-    def image_tag(url):
-        return f'<a href="{url}" target="_blank"><img src="{url}" width="80"></a>'
-
-    styled_df = filtered.copy()
-    styled_df["Image"] = styled_df["Image_URL"].apply(image_tag)
-    styled_df = styled_df.drop(columns=["Image_URL"])  
-
-    # Reorder so image appears first (optional)
-    cols = ["Image"] + [col for col in styled_df.columns if col != "Image"]
-    styled_df = styled_df[cols]
-
-    st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-else:
-    latest_with_changes = st.session_state.get("latest_with_changes", filtered)
-    filtered_display = latest_with_changes.drop(columns=["Image_URL"], errors="ignore")
-    st.dataframe(filtered_display.reset_index(drop=True))
-
 # Optional visual preview of each card
 #show_visuals = st.checkbox("Show visual preview of each card", value=False)
 
@@ -474,18 +396,90 @@ if not history_df.empty:
                 history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
             )
 
+    # ✅ Extract latest-day snapshot with price change columns for display
+    latest_date = history_df["Date"].max()
+    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
 
-# ✅ Extract latest-day snapshot with price change columns for display
-latest_date = history_df["Date"].max()
-latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
-
-# Prevent duplicate columns from merges
-latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
-
-df = latest_with_changes.copy()
+    # Prevent duplicate columns from merges
+    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
+else:
+    # Create an empty DataFrame to avoid errors later
+    latest_with_changes = pd.DataFrame()
 
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
+
+
+# --------------------------
+# Filter Controls
+# --------------------------
+st.sidebar.header("Filter Options")
+
+all_sets = sorted(latest_with_changes["Set"].unique())
+select_all_sets = st.sidebar.checkbox("Select all sets", value=True)
+
+if select_all_sets:
+    selected_sets = all_sets
+else:
+    selected_sets = st.sidebar.multiselect("Choose Set(s)", options=all_sets)
+
+if not selected_sets:
+    st.warning("Please select at least one set.")
+    st.stop()
+
+min_ungraded = st.sidebar.number_input("Min price ($)", min_value=0.01, max_value=10000.0, value=0.01, step=0.01)
+max_ungraded = st.sidebar.number_input("Max price ($)", min_value=0.01, max_value=10000.0, value=10000.0, step=0.01)
+min_grade9 = st.sidebar.number_input("Min Grade 9 Price", min_value=0, value=0)
+min_psa10 = st.sidebar.number_input("Min PSA 10 Price", min_value=0, value=0)
+
+# --------------------------
+# 3-day, 7-day, 14-day, and 30-day Ungraded Price Change Filters
+change_filters = {}
+for days in [3, 7, 14, 30]:
+    col_name = f"Ungraded_{days}d_Change"
+    min_val, max_val = st.sidebar.slider(
+        f"{days}-Day Ungraded Price Change ($)",
+        min_value=-1000.0,
+        max_value=1000.0,
+        value=(-1000.0, 1000.0),
+        step=0.01
+    )
+    change_filters[col_name] = (min_val, max_val)
+
+# --------------------------
+# Apply all filters
+filtered = latest_with_changes[
+    (latest_with_changes["Set"].isin(selected_sets)) &
+    (latest_with_changes["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
+    (latest_with_changes["Grade_9_Price"] >= min_grade9) &
+    (latest_with_changes["PSA_10_Price"] >= min_psa10)
+]
+
+for col_name, (min_val, max_val) in change_filters.items():
+    if col_name in filtered.columns:
+        filtered = filtered[filtered[col_name].between(min_val, max_val)]
+
+st.subheader(f"Filtered Results ({len(filtered)} cards)")
+
+st.sidebar.caption("⚠️ Enabling image thumbnails may slow down loading or cause images to fail.")
+show_images = st.sidebar.checkbox("Show image thumbnails", value=False)
+
+if show_images:
+    def image_tag(url):
+        return f'<a href="{url}" target="_blank"><img src="{url}" width="80"></a>'
+
+    styled_df = filtered.copy()
+    styled_df["Image"] = styled_df["Image_URL"].apply(image_tag)
+    styled_df = styled_df.drop(columns=["Image_URL"])  
+
+    cols = ["Image"] + [col for col in styled_df.columns if col != "Image"]
+    styled_df = styled_df[cols]
+
+    st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
+else:
+    filtered_display = filtered.drop(columns=["Image_URL"], errors="ignore")
+    st.dataframe(filtered_display.reset_index(drop=True))
+
 
 
 # Apply filters to the full history (not just latest snapshot)
