@@ -449,8 +449,33 @@ else:
 
 # Use latest_df for the main app display
 
-    history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+df = latest_df.copy()
+
+# Compute 3, 7, 14, 30 day price changes inside the full history
+if not history_df.empty:
+    for days in [3, 7, 14, 30]:
+        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days)
+        prior = history_df[history_df["Date"] <= prior_cutoff]
+
+        if not prior.empty:
+            prior_prices = (
+                prior.groupby("Card_Name")
+                .apply(lambda x: x.sort_values("Date").iloc[-1])
+                .reset_index(drop=True)
             )
+
+            history_df = pd.merge(
+                history_df,
+                prior_prices[["Card_Name", "Ungraded_Price"]],
+                on="Card_Name",
+                how="left",
+                suffixes=("", f"_{days}d_ago")
+            )
+
+            history_df[f"Ungraded_{days}d_Change"] = (
+                history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+            )
+
 
 # ✅ Extract latest-day snapshot with price change columns for display
 latest_date = history_df["Date"].max()
