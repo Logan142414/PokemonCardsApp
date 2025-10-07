@@ -557,7 +557,7 @@ def build_vector_store(df):
     Embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return FAISS.from_documents(docs, embeddings)
 
-vector_store = build_vector_store(history_df)
+vector_store = build_vector_store(history_filtered)
 
 # 3. Session state to keep chat history
 if "chat_history" not in st.session_state:
