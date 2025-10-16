@@ -393,7 +393,7 @@ blob = bucket.blob("pokemon_price_history.csv")
 try:
     data = blob.download_as_bytes()
     history_df = pd.read_csv(BytesIO(data))
-    st.success(f"✅ Loaded {len(history_df):,} records from cloud history file.")
+    st.success()
 except Exception as e:
     st.warning(f"No existing cloud history found or failed to load: {e}")
     history_df = pd.DataFrame()
