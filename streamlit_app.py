@@ -310,10 +310,12 @@ if st.button("Refresh Price Data"):
                 old = pd.DataFrame()
 
             # Combine if new date not already included
-            if not old.empty and today not in old["Date"].astype(str).values:
+            if old.empty:
+                combined = df_scraped
+            elif today not in old["Date"].astype(str).values:
                 combined = pd.concat([old, df_scraped], ignore_index=True)
             else:
-                combined = df_scraped
+                combined = old  # keep full history if today's data already exists
 
             # Upload updated file back to GCS
             csv_buffer = BytesIO()
