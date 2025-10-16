@@ -10,7 +10,32 @@ import requests                 # for HTTP requests
 from bs4 import BeautifulSoup   # for HTML parsing
 from datetime import datetime   # for timestamps
 from zoneinfo import ZoneInfo   # for timezone-aware timestamps
+from google.cloud import storage
+import json
+from io import BytesIO
 from langchain.agents import create_pandas_dataframe_agent
+
+
+# --------------------------
+# Google Cloud Storage Setup
+# --------------------------
+from google.oauth2 import service_account
+
+# Load service account JSON from Streamlit secrets
+gcp_credentials = service_account.Credentials.from_service_account_info(
+    json.loads(st.secrets["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
+)
+
+# Initialize client
+storage_client = storage.Client(credentials=gcp_credentials)
+
+# Set your bucket name
+BUCKET_NAME = "pokemon-price-history-data" 
+
+
+# --------------------------
+# Web page set up, colors, details, etc
+# --------------------------
 
 st.markdown(
     """
@@ -267,28 +292,37 @@ if st.button("Refresh Price Data"):
         df_scraped = scrape_pricecharting_data()
 
         if not df_scraped.empty:
-            os.makedirs("data", exist_ok=True)
-
             # Add today's date column
             today = datetime.now().strftime("%Y-%m-%d")
             df_scraped["Date"] = today
 
-            # Save/update growing history file
-            history_path = "data/pokemon_price_history.csv"
-            if os.path.exists(history_path):
-                old = pd.read_csv(history_path)
-                # Only append if this date isn’t already in history
-                if today not in old["Date"].astype(str).values:
-                    combined = pd.concat([old, df_scraped], ignore_index=True)
-                    combined.to_csv(history_path, index=False)
+            # --------------------------
+            # Save/update growing history file on Google Cloud Storage
+            # --------------------------
+            bucket = storage_client.bucket(BUCKET_NAME)
+            blob = bucket.blob("pokemon_price_history.csv")
+
+            # Try to load old data from GCS
+            try:
+                old_data = blob.download_as_bytes()
+                old = pd.read_csv(BytesIO(old_data))
+            except Exception:
+                old = pd.DataFrame()
+
+            # Combine if new date not already included
+            if not old.empty and today not in old["Date"].astype(str).values:
+                combined = pd.concat([old, df_scraped], ignore_index=True)
             else:
-                df_scraped.to_csv(history_path, index=False)
+                combined = df_scraped
 
-            # Still save latest snapshot (your app depends on this)
-            df_scraped.to_csv("data/latest_pokemon_prices.csv", index=False)
+            # Upload updated file back to GCS
+            csv_buffer = BytesIO()
+            combined.to_csv(csv_buffer, index=False)
+            blob.upload_from_file(csv_buffer, content_type="text/csv", rewind=True)
 
-            st.success("Data refreshed!")
-            df = df_scraped  # ✅ assign top-level, do not return
+            st.success("✅ Data refreshed and uploaded to cloud!")
+            df = df_scraped  # keep this line
+
         else:
             st.error("Scraping failed or returned no data.")
             st.stop()
@@ -351,12 +385,15 @@ for col in price_cols:
 def convert_df_to_csv(df):
     return df.to_csv(index=False).encode("utf-8")
 
-# Load full history
-history_path = "data/pokemon_price_history.csv"
-if os.path.exists(history_path):
-    history_df = pd.read_csv(history_path)
-else:
-    st.warning("No history file found.")
+bucket = storage_client.bucket(BUCKET_NAME)
+blob = bucket.blob("pokemon_price_history.csv")
+
+try:
+    data = blob.download_as_bytes()
+    history_df = pd.read_csv(BytesIO(data))
+    st.success(f"✅ Loaded {len(history_df):,} records from cloud history file.")
+except Exception as e:
+    st.warning(f"No existing cloud history found or failed to load: {e}")
     history_df = pd.DataFrame()
 
 # Work with full history + keep latest snapshot separate
