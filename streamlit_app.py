@@ -387,7 +387,7 @@ if not history_df.empty:
             history_df = pd.merge(
                 history_df,
                 prior_prices[["Set", "Card_Name", "Ungraded_Price"]]
-                on="Card_Name",
+                on=["Set", "Card_Name"],
                 how="left",
                 suffixes=("", f"_{days}d_ago")
             )
