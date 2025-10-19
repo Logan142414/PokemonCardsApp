@@ -410,39 +410,38 @@ else:
 
 df = latest_df.copy()
 
-# Compute 3, 7, 14, 30 day price changes inside the full history
+# Compute 3, 7, 14, 30 day price changes (calendar-based, tolerant merge)
 if not history_df.empty:
+    history_df["Date"] = pd.to_datetime(history_df["Date"])
+    history_df = history_df.sort_values(["Set", "Card_Name", "Date"]).reset_index(drop=True)
+
     for days in [3, 7, 14, 30]:
-        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days)
-        prior = history_df[history_df["Date"] <= prior_cutoff]
+        temp = history_df[["Set", "Card_Name", "Date", "Ungraded_Price"]].copy()
+        temp["target_date"] = temp["Date"] + pd.Timedelta(days=days)
 
-        if not prior.empty:
-            prior_prices = (
-                prior.groupby(["Set", "Card_Name"])
-                .apply(lambda x: x.sort_values("Date").iloc[-1])
-                .reset_index(drop=True)
-            )
+        # Calendar-based merge (accurate, allows ±1 day tolerance)
+        history_df = pd.merge_asof(
+            history_df.sort_values("Date"),
+            temp.sort_values("target_date"),
+            left_on="Date",
+            right_on="target_date",
+            by=["Set", "Card_Name"],
+            direction="backward",
+            tolerance=pd.Timedelta(days=1),
+            suffixes=("", f"_{days}d_ago")
+        )
 
-            history_df = pd.merge(
-                history_df,
-                prior_prices[["Set", "Card_Name", "Ungraded_Price"]],
-                on=["Set", "Card_Name"],
-                how="left",
-                suffixes=("", f"_{days}d_ago")
-            )
+        # Calculate price change
+        history_df[f"Ungraded_{days}d_Change"] = (
+            history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+        )
 
-            history_df[f"Ungraded_{days}d_Change"] = (
-                history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
-            )
-
-    # ✅ Extract latest-day snapshot with price change columns for display
+    # ✅ Extract the latest snapshot for display
     latest_date = history_df["Date"].max()
     latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
-
-    # Prevent duplicate columns from merges
     latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
+
 else:
-    # Create an empty DataFrame to avoid errors later
     latest_with_changes = pd.DataFrame()
 
 # Store it in session state for reuse
