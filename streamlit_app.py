@@ -410,40 +410,28 @@ else:
 
 df = latest_df.copy()
 
-# Compute 3, 7, 14, 30 day price changes (calendar-based, tolerant merge)
+# Compute 3, 7, 14, 30 day price changes (row-based, dynamic per card)
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
     history_df = history_df.sort_values(["Set", "Card_Name", "Date"]).reset_index(drop=True)
 
+    # Compute changes for each card separately
     for days in [3, 7, 14, 30]:
-        temp = history_df[["Set", "Card_Name", "Date", "Ungraded_Price"]].copy()
-        temp["target_date"] = temp["Date"] + pd.Timedelta(days=days)
-
-        # Calendar-based merge (accurate, allows ±1 day tolerance)
-        history_df = pd.merge_asof(
-            history_df.sort_values("Date"),
-            temp.sort_values("target_date"),
-            left_on="Date",
-            right_on="target_date",
-            by=["Set", "Card_Name"],
-            direction="backward",
-            tolerance=pd.Timedelta(days=1),
-            suffixes=("", f"_{days}d_ago")
+        history_df[f"Ungraded_{days}d_ago"] = (
+            history_df.groupby(["Set", "Card_Name"])["Ungraded_Price"].shift(days)
         )
-
-        # Calculate price change
         history_df[f"Ungraded_{days}d_Change"] = (
-            history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+            history_df["Ungraded_Price"] - history_df[f"Ungraded_{days}d_ago"]
         )
 
-    # ✅ Extract the latest snapshot for display
+    # ✅ Extract the latest-day snapshot for display
     latest_date = history_df["Date"].max()
     latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
     latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
 
 else:
     latest_with_changes = pd.DataFrame()
-
+    
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
 
