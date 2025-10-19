@@ -410,30 +410,32 @@ else:
 
 df = latest_df.copy()
 
-# Compute 3, 7, 14, 30 day price changes (row-based, dynamic per card)
-if not history_df.empty:
-    history_df["Date"] = pd.to_datetime(history_df["Date"])
-    history_df = history_df.sort_values(["Set", "Card_Name", "Date"]).reset_index(drop=True)
+# Compute 3, 7, 14, 30 day price changes inside the full history 
+if not history_df.empty: 
+    for days in [3, 7, 14, 30]: 
+        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days) 
+        prior = history_df[history_df["Date"] <= prior_cutoff] 
+    
+        if not prior.empty: 
+            prior_prices = ( 
+                prior.groupby(["Set", "Card_Name"]).apply(lambda x: x.sort_values("Date").iloc[-1]).reset_index(drop=True) 
+            ) 
+            history_df = pd.merge( history_df, prior_prices[["Set", "Card_Name", "Ungraded_Price"]], 
+            on=["Set", "Card_Name"], 
+            how="left", 
+            suffixes=("", f"_{days}d_ago") ) 
+        
+            history_df[f"Ungraded_{days}d_Change"] = ( 
+            history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"] ) 
+        
+# ✅ Extract latest-day snapshot with price change columns for display 
+    latest_date = history_df["Date"].max() 
+    latest_with_changes = history_df[history_df["Date"] == latest_date].copy() 
 
-    # Compute changes for each card separately
-    for days in [3, 7, 14, 30]:
-        history_df[f"Ungraded_{days}d_ago"] = (
-            history_df.groupby(["Set", "Card_Name"])["Ungraded_Price"].shift(days)
-        )
-        history_df[f"Ungraded_{days}d_Change"] = (
-            history_df["Ungraded_Price"] - history_df[f"Ungraded_{days}d_ago"]
-        )
-
-    # ✅ Extract the latest row per card (safe, never empty if history exists)
-    latest_with_changes = (
-        history_df.sort_values(["Set", "Card_Name", "Date"])
-        .groupby(["Set", "Card_Name"])
-        .tail(1)
-        .reset_index(drop=True)
-    )
-    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
-
-else:
+# Prevent duplicate columns from merging 
+    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()] 
+else: 
+# Create an empty DataFrame to avoid errors later 
     latest_with_changes = pd.DataFrame()
 
 # Store it in session state for reuse
