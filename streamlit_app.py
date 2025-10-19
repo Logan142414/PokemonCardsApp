@@ -424,14 +424,18 @@ if not history_df.empty:
             history_df["Ungraded_Price"] - history_df[f"Ungraded_{days}d_ago"]
         )
 
-    # ✅ Extract the latest-day snapshot for display
-    latest_date = history_df["Date"].max()
-    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
+    # ✅ Extract the latest row per card (safe, never empty if history exists)
+    latest_with_changes = (
+        history_df.sort_values(["Set", "Card_Name", "Date"])
+        .groupby(["Set", "Card_Name"])
+        .tail(1)
+        .reset_index(drop=True)
+    )
     latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
 
 else:
     latest_with_changes = pd.DataFrame()
-    
+
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
 
