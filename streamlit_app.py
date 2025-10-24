@@ -410,41 +410,49 @@ else:
 
 df = latest_df.copy()
 
-# Compute 3, 7, 14, 30 day price changes inside the full history 
+# Compute 3, 7, 14, 30 day price changes
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
-
+    
     # Sort by card and date
     history_df = history_df.sort_values(["Set", "Card_Name", "Date"]).reset_index(drop=True)
-
-    # Compute 3, 7, 14, 30 day changes
+    
+    # Get the latest date (today's data)
+    latest_date = history_df["Date"].max()
+    
+    # Initialize columns for the latest snapshot
+    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
+    
+    # For each time period, find the historical price
     for days in [3, 7, 14, 30]:
-        prior_prices_list = []
-
-        # Group by card
-        for (s, c), group in history_df.groupby(["Set", "Card_Name"]):
-            # For each row, find the last available price >= days ago
-            prior_prices = []
-            for i, row in group.iterrows():
-                cutoff = row["Date"] - pd.Timedelta(days=days)
-                prior_row = group[group["Date"] <= cutoff].sort_values("Date").tail(1)
-                if not prior_row.empty:
-                    prior_prices.append(prior_row["Ungraded_Price"].values[0])
-                else:
-                    prior_prices.append(pd.NA)  # No prior price
-            group[f"Ungraded_{days}d_ago"] = prior_prices
-            group[f"Ungraded_{days}d_Change"] = group["Ungraded_Price"] - group[f"Ungraded_{days}d_ago"]
-            prior_prices_list.append(group)
-
-        # Concatenate all cards back together
-        history_df = pd.concat(prior_prices_list, ignore_index=True)
-
-    # Extract latest snapshot per card (robust even if not all cards have latest_date)
-    latest_with_changes = history_df.groupby(["Set", "Card_Name"]).apply(lambda x: x.sort_values("Date").iloc[-1]).reset_index(drop=True)
+        # Calculate the target date
+        target_date = latest_date - pd.Timedelta(days=days)
+        
+        # Initialize the columns
+        latest_with_changes[f"Ungraded_{days}d_ago"] = pd.NA
+        latest_with_changes[f"Ungraded_{days}d_Change"] = pd.NA
+        
+        # For each card in the latest snapshot
+        for idx, row in latest_with_changes.iterrows():
+            set_name = row["Set"]
+            card_name = row["Card_Name"]
+            
+            # Find historical data for this specific card
+            card_history = history_df[
+                (history_df["Set"] == set_name) & 
+                (history_df["Card_Name"] == card_name) &
+                (history_df["Date"] <= target_date)
+            ]
+            
+            # If we have historical data, take the most recent price before target date
+            if not card_history.empty:
+                prior_price = card_history.sort_values("Date").iloc[-1]["Ungraded_Price"]
+                latest_with_changes.at[idx, f"Ungraded_{days}d_ago"] = prior_price
+                latest_with_changes.at[idx, f"Ungraded_{days}d_Change"] = row["Ungraded_Price"] - prior_price
 
 else:
     latest_with_changes = pd.DataFrame()
-
+    
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
 
