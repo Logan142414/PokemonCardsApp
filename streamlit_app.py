@@ -410,54 +410,40 @@ else:
 
 df = latest_df.copy()
 
-# FIXED: Compute 3, 7, 14, 30 day price changes - WITH DEBUGGING
-if not history_df.empty:
-    history_df["Date"] = pd.to_datetime(history_df["Date"])
-    
-    # Sort by card and date
-    history_df = history_df.sort_values(["Set", "Card_Name", "Date"]).reset_index(drop=True)
-    
-    # Get the latest date (today's data)
-    latest_date = history_df["Date"].max()
-    st.write(f"DEBUG: Latest date in history: {latest_date}")
-    st.write(f"DEBUG: Total rows in history: {len(history_df)}")
-    
-    # Initialize columns for the latest snapshot
-    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
-    st.write(f"DEBUG: Rows with latest date: {len(latest_with_changes)}")
-    
-    # For each time period, find the historical price
-    for days in [3, 7, 14, 30]:
-        # Calculate the target date
-        target_date = latest_date - pd.Timedelta(days=days)
+# Compute 3, 7, 14, 30 day price changes inside the full history 
+if not history_df.empty: 
+    for days in [3, 7, 14, 30]: 
+        prior_cutoff = history_df["Date"].max() - 
+        pd.Timedelta(days=days) 
+        prior = history_df[history_df["Date"] <= prior_cutoff] 
+        if not prior.empty: 
+            prior_prices = ( 
+                prior.groupby(["Set", "Card_Name"]) 
+                .apply(lambda x: x.sort_values("Date").iloc[-1]) 
+                .reset_index(drop=True) 
+            ) 
+            history_df = pd.merge( 
+                history_df, 
+                prior_prices[["Set", "Card_Name", "Ungraded_Price"]], 
+                on=["Set", "Card_Name"], 
+                how="left", 
+                suffixes=("", f"_{days}d_ago") 
+            ) 
+            history_df[f"Ungraded_{days}d_Change"] = 
+            ( history_df["Ungraded_Price"] - 
+             history_df[f"Ungraded_Price_{days}d_ago"] ) 
         
-        # Initialize the columns
-        latest_with_changes[f"Ungraded_{days}d_ago"] = pd.NA
-        latest_with_changes[f"Ungraded_{days}d_Change"] = pd.NA
-        
-        # For each card in the latest snapshot
-        for idx, row in latest_with_changes.iterrows():
-            set_name = row["Set"]
-            card_name = row["Card_Name"]
-            
-            # Find historical data for this specific card
-            card_history = history_df[
-                (history_df["Set"] == set_name) & 
-                (history_df["Card_Name"] == card_name) &
-                (history_df["Date"] <= target_date)
-            ]
-            
-            # If we have historical data, take the most recent price before target date
-            if not card_history.empty:
-                prior_price = card_history.sort_values("Date").iloc[-1]["Ungraded_Price"]
-                latest_with_changes.at[idx, f"Ungraded_{days}d_ago"] = prior_price
-                latest_with_changes.at[idx, f"Ungraded_{days}d_Change"] = row["Ungraded_Price"] - prior_price
+# ✅ Extract latest-day snapshot with price change columns for display 
+    latest_date = history_df["Date"].max() 
+    latest_with_changes = history_df[history_df["Date"] == 
+    latest_date].copy() 
 
-    st.write(f"DEBUG: Final latest_with_changes has {len(latest_with_changes)} rows")
-    st.write(f"DEBUG: Columns in latest_with_changes: {list(latest_with_changes.columns)}")
-else:
+# Prevent duplicate columns from merges 
+    latest_with_changes = latest_with_changes.loc[:,
+    ~latest_with_changes.columns.duplicated()] 
+    else: 
+# Create an empty DataFrame to avoid errors later 
     latest_with_changes = pd.DataFrame()
-    st.write("DEBUG: history_df is empty!")
     
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
