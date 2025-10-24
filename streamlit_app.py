@@ -428,18 +428,14 @@ if not history_df.empty:
                 how="left", 
                 suffixes=("", f"_{days}d_ago") 
             ) 
-            history_df[f"Ungraded_{days}d_Change"] = 
-            ( history_df["Ungraded_Price"] - 
-             history_df[f"Ungraded_Price_{days}d_ago"] ) 
+            history_df[f"Ungraded_{days}d_Change"] = ( history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"] ) 
         
 # ✅ Extract latest-day snapshot with price change columns for display 
     latest_date = history_df["Date"].max() 
-    latest_with_changes = history_df[history_df["Date"] == 
-    latest_date].copy() 
+    latest_with_changes = history_df[history_df["Date"] == latest_date].copy() 
 
 # Prevent duplicate columns from merges 
-    latest_with_changes = latest_with_changes.loc[:,
-    ~latest_with_changes.columns.duplicated()] 
+    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()] 
     else: 
 # Create an empty DataFrame to avoid errors later 
     latest_with_changes = pd.DataFrame()
