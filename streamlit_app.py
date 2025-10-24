@@ -413,8 +413,7 @@ df = latest_df.copy()
 # Compute 3, 7, 14, 30 day price changes inside the full history 
 if not history_df.empty: 
     for days in [3, 7, 14, 30]: 
-        prior_cutoff = history_df["Date"].max() - 
-        pd.Timedelta(days=days) 
+        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days) 
         prior = history_df[history_df["Date"] <= prior_cutoff] 
         if not prior.empty: 
             prior_prices = ( 
