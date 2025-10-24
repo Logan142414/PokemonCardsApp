@@ -410,7 +410,7 @@ else:
 
 df = latest_df.copy()
 
-# Compute 3, 7, 14, 30 day price changes
+# FIXED: Compute 3, 7, 14, 30 day price changes - WITH DEBUGGING
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
     
@@ -419,9 +419,12 @@ if not history_df.empty:
     
     # Get the latest date (today's data)
     latest_date = history_df["Date"].max()
+    st.write(f"DEBUG: Latest date in history: {latest_date}")
+    st.write(f"DEBUG: Total rows in history: {len(history_df)}")
     
     # Initialize columns for the latest snapshot
     latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
+    st.write(f"DEBUG: Rows with latest date: {len(latest_with_changes)}")
     
     # For each time period, find the historical price
     for days in [3, 7, 14, 30]:
@@ -450,8 +453,11 @@ if not history_df.empty:
                 latest_with_changes.at[idx, f"Ungraded_{days}d_ago"] = prior_price
                 latest_with_changes.at[idx, f"Ungraded_{days}d_Change"] = row["Ungraded_Price"] - prior_price
 
+    st.write(f"DEBUG: Final latest_with_changes has {len(latest_with_changes)} rows")
+    st.write(f"DEBUG: Columns in latest_with_changes: {list(latest_with_changes.columns)}")
 else:
     latest_with_changes = pd.DataFrame()
+    st.write("DEBUG: history_df is empty!")
     
 # Store it in session state for reuse
 st.session_state["latest_with_changes"] = latest_with_changes
