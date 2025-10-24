@@ -436,7 +436,7 @@ if not history_df.empty:
 
 # Prevent duplicate columns from merges 
     latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()] 
-    else: 
+else: 
 # Create an empty DataFrame to avoid errors later 
     latest_with_changes = pd.DataFrame()
     
