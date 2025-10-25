@@ -186,7 +186,6 @@ def scrape_pricecharting_data():
             sorted_url = f"{url}?sort=highest-price"
             res = requests.get(sorted_url, headers=headers)
             soup = BeautifulSoup(res.text, 'html.parser')
-
             rows = soup.select('table tr')
             for row in rows:
                 cols = row.find_all('td')
