@@ -14,6 +14,10 @@ from google.cloud import storage
 import json
 from io import BytesIO
 from langchain.agents import create_pandas_dataframe_agent
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.schema import Document
+
 
 
 
@@ -558,26 +562,36 @@ st.markdown("Ask a question about the dataset:")
 
 # 1. Initialize Hugging Face LLM (your wrapper still works here)
 llm = HFInferenceLLM(
-    model_name="HuggingFaceTB/SmolLM3-3B",
+    model_name="meta-llama/Llama-3.2-3B-Instruct",
     api_key=os.environ["HF_TOKEN"]
 )
 
 # 2. Build FAISS vector store once
+
 @st.cache_resource
 def build_vector_store(df):
-    from langchain.embeddings import HuggingFaceEmbeddings
-    from langchain.vectorstores import FAISS
-    from langchain.schema import Document
-
+    
     docs = []
     for i, row in df.iterrows():
-        content = " | ".join([f"{col}: {row[col]}" for col in df.columns])
-        docs.append(Document(page_content=content, metadata={"row": i}))
+        # Start with basic info
+        content = f"""Card: {row['Card_Name']}
+    Set: {row['Set']}
+    Ungraded: ${row['Ungraded_Price']:.2f}
+    Grade 9: ${row['Grade_9_Price']:.2f}
+    PSA 10: ${row['PSA_10_Price']:.2f}"""
+    
+        # Dynamically add all price change columns that exist
+        for days in [3, 7, 14, 30]:
+            change_col = f'Ungraded_{days}d_Change'
+            if change_col in row.index and pd.notna(row[change_col]):
+                content += f"\n{days}-Day Change: ${row[change_col]:.2f}"
+    
+        docs.append(Document(page_content=content, metadata={"row": i, "card_name": row['Card_Name']}))
 
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return FAISS.from_documents(docs, embeddings)
 
-vector_store = build_vector_store(history_df)
+vector_store = build_vector_store(latest_with_changes)
 
 
 # 3. Session state to keep chat history
