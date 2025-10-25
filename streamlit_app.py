@@ -14,6 +14,10 @@ from google.cloud import storage
 import json
 from io import BytesIO
 from langchain.agents import create_pandas_dataframe_agent
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.schema import Document
+
 
 
 # --------------------------
@@ -555,18 +559,9 @@ st.markdown("---")
 st.subheader("GenAI Chatbot")
 st.markdown("Ask a question about the dataset:")
 
-# 1. Initialize Hugging Face LLM (your wrapper still works here)
-llm = HFInferenceLLM(
-    model_name="HuggingFaceTB/SmolLM3-3B",
-    api_key=os.environ["HF_TOKEN"]
-)
-
-# 2. Build FAISS vector store once
+# 1. Build FAISS vector store (cached in session)
 @st.cache_resource
 def build_vector_store(df):
-    from langchain.embeddings import HuggingFaceEmbeddings
-    from langchain.vectorstores import FAISS
-    from langchain.schema import Document
 
     docs = []
     for i, row in df.iterrows():
@@ -576,7 +571,18 @@ def build_vector_store(df):
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return FAISS.from_documents(docs, embeddings)
 
-vector_store = build_vector_store(history_df)
+# 2. Store heavy components persistently in session state
+if "vector_store" not in st.session_state:
+    st.session_state.vector_store = build_vector_store(history_df)
+
+if "llm" not in st.session_state:
+    st.session_state.llm = HFInferenceLLM(
+        model_name="HuggingFaceTB/SmolLM3-3B",
+        api_key=os.environ["HF_TOKEN"]
+    )
+
+vector_store = st.session_state.vector_store
+llm = st.session_state.llm
 
 # 3. Session state to keep chat history
 if "chat_history" not in st.session_state:
