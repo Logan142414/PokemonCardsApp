@@ -387,16 +387,18 @@ for col in price_cols:
 def convert_df_to_csv(df):
     return df.to_csv(index=False).encode("utf-8")
 
-bucket = storage_client.bucket(BUCKET_NAME)
-blob = bucket.blob("pokemon_price_history.csv")
+@st.cache_data(ttl=3600)
+def load_history_from_cloud():
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob("pokemon_price_history.csv")
+    try:
+        data = blob.download_as_bytes()
+        return pd.read_csv(BytesIO(data))
+    except Exception as e:
+        st.warning(f"No existing cloud history found or failed to load: {e}")
+        return pd.DataFrame()
 
-try:
-    data = blob.download_as_bytes()
-    history_df = pd.read_csv(BytesIO(data))
-    st.success("")
-except Exception as e:
-    st.warning(f"No existing cloud history found or failed to load: {e}")
-    history_df = pd.DataFrame()
+history_df = load_history_from_cloud()
 
 # Work with full history + keep latest snapshot separate
 if not history_df.empty:
