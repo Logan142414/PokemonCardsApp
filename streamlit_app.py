@@ -387,60 +387,60 @@ for col in price_cols:
 def convert_df_to_csv(df):
     return df.to_csv(index=False).encode("utf-8")
 
-bucket = storage_client.bucket(BUCKET_NAME)
-blob = bucket.blob("pokemon_price_history.csv")
+@st.cache_data(ttl=3600)
+def load_history_from_cloud():
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob("pokemon_price_history.csv")
+    try:
+        data = blob.download_as_bytes()
+        return pd.read_csv(BytesIO(data))
+    except Exception as e:
+        st.warning(f"No existing cloud history found or failed to load: {e}")
+        return pd.DataFrame()
 
-try:
-    data = blob.download_as_bytes()
-    history_df = pd.read_csv(BytesIO(data))
-    st.success("")
-except Exception as e:
-    st.warning(f"No existing cloud history found or failed to load: {e}")
-    history_df = pd.DataFrame()
+history_df = load_history_from_cloud()
 
-# Work with full history + keep latest snapshot separate
-if not history_df.empty:
+@st.cache_data
+def calculate_price_changes(_history_df):
+    if _history_df.empty:
+        return pd.DataFrame()
+    
+    history_df = _history_df.copy()
     history_df["Date"] = pd.to_datetime(history_df["Date"])
     latest_date = history_df["Date"].max()
-    latest_df = history_df[history_df["Date"] == latest_date].copy()
-else:
-    latest_df = pd.DataFrame()
-
-# Use latest_df for the main app display
-
-df = latest_df.copy()
-
-# Compute 3, 7, 14, 30 day price changes inside the full history 
-if not history_df.empty: 
-    for days in [3, 7, 14, 30]: 
-        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days) 
-        prior = history_df[history_df["Date"] <= prior_cutoff] 
-        if not prior.empty: 
-            prior_prices = ( 
-                prior.groupby(["Set", "Card_Name"]) 
-                .apply(lambda x: x.sort_values("Date").iloc[-1]) 
-                .reset_index(drop=True) 
-            ) 
-            history_df = pd.merge( 
-                history_df, 
-                prior_prices[["Set", "Card_Name", "Ungraded_Price"]], 
-                on=["Set", "Card_Name"], 
-                how="left", 
-                suffixes=("", f"_{days}d_ago") 
-            ) 
-            history_df[f"Ungraded_{days}d_Change"] = ( history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"] ) 
-        
-# ✅ Extract latest-day snapshot with price change columns for display 
-    latest_date = history_df["Date"].max() 
-    latest_with_changes = history_df[history_df["Date"] == latest_date].copy() 
-
-# Prevent duplicate columns from merges 
-    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()] 
-else: 
-# Create an empty DataFrame to avoid errors later 
-    latest_with_changes = pd.DataFrame()
+    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
     
-# Store it in session state for reuse
+    for days in [3, 7, 14, 30]:
+        prior_cutoff = latest_date - pd.Timedelta(days=days)
+        prior = history_df[history_df["Date"] <= prior_cutoff].copy()
+        
+        if not prior.empty:
+            prior_prices = (
+                prior.sort_values("Date")
+                .groupby(["Set", "Card_Name"], as_index=False)
+                .last()
+                [["Set", "Card_Name", "Ungraded_Price"]]
+                .rename(columns={"Ungraded_Price": f"Ungraded_Price_{days}d_ago"})
+            )
+            
+            latest_with_changes = pd.merge(
+                latest_with_changes,
+                prior_prices,
+                on=["Set", "Card_Name"],
+                how="left"
+            )
+            
+            latest_with_changes[f"Ungraded_{days}d_Change"] = (
+                latest_with_changes["Ungraded_Price"] - 
+                latest_with_changes[f"Ungraded_Price_{days}d_ago"]
+            )
+        else:
+            latest_with_changes[f"Ungraded_Price_{days}d_ago"] = pd.NA
+            latest_with_changes[f"Ungraded_{days}d_Change"] = pd.NA
+    
+    return latest_with_changes
+
+latest_with_changes = calculate_price_changes(history_df)
 st.session_state["latest_with_changes"] = latest_with_changes
 
 
