@@ -616,7 +616,7 @@ if st.button("Ask"):
 
 CRITICAL RULES:
 1. Use ONLY exact numbers from the data - DO NOT make up values
-2. For price change questions, look at "X-Day Change" values
+2. For price change questions, look at "Ungraded_Price_"X"d_Change" values. Based on looking at the past 3 days, 7 days (week), 14 days (two weeks), 21 days (3 weeks), 30 days (1 month)
 3. Include actual card names and exact values
 4. If unsure, say "I don't have enough data" instead of guessing
 
