@@ -608,7 +608,7 @@ if st.button("Ask"):
         with st.spinner("Thinking..."):
             try:
                 # Search more cards for better results
-                docs = vector_store.similarity_search(user_input, k=50)
+                docs = vector_store.similarity_search(user_input, k=6000)
                 context_text = "\n\n".join([d.page_content for d in docs])
                 
                 # Improved prompt with strict instructions
