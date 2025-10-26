@@ -602,27 +602,32 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # 4. User input for chat
-# Input box with no label
 user_input = st.text_input("", placeholder="Type your question here...", label_visibility="collapsed")
-
 if st.button("Ask"):
     if user_input:
         with st.spinner("Thinking..."):
             try:
-                # Search relevant rows
-                docs = vector_store.similarity_search(user_input, k=10)
-                context_text = "\n".join([d.page_content for d in docs])
-                # Build prompt
-                prompt = f"""You are a helpful assistant. 
-Here is the most relevant data from the Pokémon card history dataset:
+                # Search more cards for better results
+                docs = vector_store.similarity_search(user_input, k=50)
+                context_text = "\n\n".join([d.page_content for d in docs])
+                
+                # Improved prompt with strict instructions
+                prompt = f"""You are a Pokemon card pricing expert. Answer using ONLY the data below. Be precise and accurate.
 
+CRITICAL RULES:
+1. Use ONLY exact numbers from the data - DO NOT make up values
+2. For price change questions, look at "X-Day Change" values
+3. Include actual card names and exact values
+4. If unsure, say "I don't have enough data" instead of guessing
+
+CARD DATA:
 {context_text}
 
-Now answer the question: {user_input}
-"""
+USER QUESTION: {user_input}
+
+YOUR ANSWER:"""
 
                 answer = llm(prompt)
-
                 st.session_state.chat_history.append({"user": user_input, "bot": answer})
             except Exception as e:
                 st.session_state.chat_history.append({"user": user_input, "bot": f"⚠️ Error: {e}"})
