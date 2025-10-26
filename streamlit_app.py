@@ -487,7 +487,10 @@ filtered = latest_with_changes[
 
 for col_name, (min_val, max_val) in change_filters.items():
     if col_name in filtered.columns:
-        filtered = filtered[filtered[col_name].between(min_val, max_val)]
+        # Keep cards with NaN (new cards with no history) OR cards within the range
+        filtered = filtered[
+            filtered[col_name].isna() | filtered[col_name].between(min_val, max_val)
+        ]
 
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
 
