@@ -487,10 +487,17 @@ filtered = latest_with_changes[
 
 for col_name, (min_val, max_val) in change_filters.items():
     if col_name in filtered.columns:
-        # Keep cards with NaN (new cards with no history) OR cards within the range
-        filtered = filtered[
-            filtered[col_name].isna() | filtered[col_name].between(min_val, max_val)
-        ]
+        # Determine if user has changed slider from default
+        include_na = (min_val <= -1000 and max_val >= 1000)
+        
+        if include_na:
+            filtered = filtered[
+                filtered[col_name].isna() | filtered[col_name].between(min_val, max_val)
+            ]
+        else:
+            filtered = filtered[
+                filtered[col_name].between(min_val, max_val)
+            ]
 
 st.subheader(f"Filtered Results ({len(filtered)} cards)")
 
