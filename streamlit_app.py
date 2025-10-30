@@ -413,29 +413,50 @@ else:
 df = latest_df.copy()
 
 # Compute 3, 7, 14, 30 day price changes inside the full history 
-if not history_df.empty: 
-    for days in [3, 7, 14, 30]: 
-        prior_cutoff = history_df["Date"].max() - pd.Timedelta(days=days) 
-        prior = history_df[history_df["Date"] <= prior_cutoff] 
-        if not prior.empty: 
-            prior_prices = ( 
-                prior.groupby(["Set", "Card_Name"]) 
-                .apply(lambda x: x.sort_values("Date").iloc[-1]) 
-                .reset_index(drop=True) 
-            ) 
-            history_df = pd.merge( 
-                history_df, 
-                prior_prices[["Set", "Card_Name", "Ungraded_Price"]], 
-                on=["Set", "Card_Name"], 
-                how="left", 
-                suffixes=("", f"_{days}d_ago") 
-            ) 
-            history_df[f"Ungraded_{days}d_Change"] = ( history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"] ) 
-        
-    latest_date = history_df["Date"].max() 
-    latest_with_changes = history_df[history_df["Date"] == latest_date].copy() 
-    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()] 
-else: 
+if not history_df.empty:
+    latest_date = history_df["Date"].max()
+
+    for days in [3, 7, 14, 30]:
+        target_date = latest_date - pd.Timedelta(days=days)
+
+        # Define ±1 day window around the target date
+        lower_bound = target_date - pd.Timedelta(days=1)
+        upper_bound = target_date + pd.Timedelta(days=1)
+
+        # Keep only records in that date range
+        window_df = history_df[
+            (history_df["Date"] >= lower_bound) &
+            (history_df["Date"] <= upper_bound)
+        ].copy()
+
+        if not window_df.empty:
+            # Pick record closest to the target date per card
+            window_df["date_diff"] = (window_df["Date"] - target_date).abs()
+            closest = (
+                window_df.sort_values("date_diff")
+                .groupby(["Set", "Card_Name"])
+                .first()
+                .reset_index()
+            )
+
+            # Merge the closest price back into main history
+            history_df = pd.merge(
+                history_df,
+                closest[["Set", "Card_Name", "Ungraded_Price"]],
+                on=["Set", "Card_Name"],
+                how="left",
+                suffixes=("", f"_{days}d_ago")
+            )
+
+            # Compute change vs. current price
+            history_df[f"Ungraded_{days}d_Change"] = (
+                history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
+            )
+
+    # Keep only the latest snapshot for export / summary
+    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
+    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
+else:
     latest_with_changes = pd.DataFrame()
     
 st.session_state["latest_with_changes"] = latest_with_changes
