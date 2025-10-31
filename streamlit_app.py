@@ -542,10 +542,7 @@ else:
     st.dataframe(filtered_display.reset_index(drop=True))
 
 
-csv_data = convert_df_to_csv(history_filtered)
 
-now = datetime.now().strftime("%Y-%m-%d_%H-%M")
-file_name = f"history_filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
 
 
 # --------------------------
@@ -559,6 +556,11 @@ history_filtered = history_df[
     (history_df["Grade_9_Price"] >= min_grade9) &
     (history_df["PSA_10_Price"] >= min_psa10)
 ]
+
+csv_data = convert_df_to_csv(history_filtered)
+
+now = datetime.now().strftime("%Y-%m-%d_%H-%M")
+file_name = f"history_filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{min_grade9}_P10{min_psa10}.csv"
 
 st.download_button(
     label="Download all-time data as CSV (using current filters)",
