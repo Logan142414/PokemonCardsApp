@@ -549,6 +549,9 @@ else:
 # Download Dataset as CSV
 # --------------------------
 
+st.markdown("---")
+st.subheader("Download")
+
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
     (history_df["Set"].isin(selected_sets)) &
