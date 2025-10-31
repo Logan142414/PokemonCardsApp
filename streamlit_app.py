@@ -17,7 +17,7 @@ from langchain.agents import create_pandas_dataframe_agent
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.schema import Document
-
+import plotly.express as px
 
 
 
@@ -542,6 +542,29 @@ else:
     st.dataframe(filtered_display.reset_index(drop=True))
 
 
+# --------------------------
+# 📊 Price Trend Analysis
+# --------------------------
+
+st.markdown("---")
+st.subheader("📊 Price Trend Analysis")
+
+avg_changes = {
+    '3-day': filtered['Ungraded_3d_Change'].mean(),
+    '7-day': filtered['Ungraded_7d_Change'].mean(),
+    '14-day': filtered['Ungraded_14d_Change'].mean(),
+    '30-day': filtered['Ungraded_30d_Change'].mean()
+}
+
+fig = px.bar(
+    x=list(avg_changes.keys()),
+    y=list(avg_changes.values()),
+    labels={'x': 'Time Period', 'y': 'Average Price Change ($)'},
+    title='Average Price Changes by Period (Filtered Results)'
+)
+st.plotly_chart(fig, use_container_width=True)
+
+    
 
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
