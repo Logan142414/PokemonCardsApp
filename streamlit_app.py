@@ -552,6 +552,13 @@ file_name = f"history_filtered_cards_{now}_UG{min_ungraded}-{max_ungraded}_G9{mi
 # Download Dataset as CSV
 # --------------------------
 
+# Apply filters to the full history (not just latest snapshot)
+history_filtered = history_df[
+    (history_df["Set"].isin(selected_sets)) &
+    (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
+    (history_df["Grade_9_Price"] >= min_grade9) &
+    (history_df["PSA_10_Price"] >= min_psa10)
+]
 
 st.download_button(
     label="Download all-time data as CSV (using current filters)",
@@ -633,14 +640,5 @@ else:
     st.info("Historical price data unavailable or missing required columns.")
 
 
-
-
-# Apply filters to the full history (not just latest snapshot)
-history_filtered = history_df[
-    (history_df["Set"].isin(selected_sets)) &
-    (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
-    (history_df["Grade_9_Price"] >= min_grade9) &
-    (history_df["PSA_10_Price"] >= min_psa10)
-]
 
 
