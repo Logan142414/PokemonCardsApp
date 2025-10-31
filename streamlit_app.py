@@ -573,14 +573,13 @@ if avg_changes:
     )
     
     # Add subtitle explaining that filters affect this chart
-    st.caption("💡 This chart reflects the filters applied above (set, price range, etc.)")
+    st.caption("💡 Both charts reflect the filters applied above (set, price range, etc.)")
     
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("📊 Price change data will appear once you have multiple days of historical data.")
 
-st.subheader("📈 Average Ungraded Price Over Time")
-st.caption("💡 This reflects the same filters applied above (set, price range, etc.).")
+# second graph looking at average ungraded card prices
 
 if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
     # Apply the same filters to historical data
