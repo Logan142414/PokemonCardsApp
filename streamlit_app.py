@@ -570,13 +570,12 @@ st.download_button(
 )
 
 
-
 # --------------------------
 # 📊 Price Trend Analysis
 # --------------------------
 
 st.markdown("---")
-st.subheader("Visualizations")
+st.subheader("Price Analytics")
 
 # Only include periods where the column exists
 avg_changes = {}
@@ -587,31 +586,26 @@ for days, col_name in [
     ('30-day', 'Ungraded_30d_Change')
 ]:
     if col_name in filtered.columns:
-        # Use .dropna() to exclude NaN values before calculating mean
         valid_values = filtered[col_name].dropna()
-        if len(valid_values) > 0:  # Only add if there's at least one non-NaN value
-            avg_changes[days] = round(valid_values.mean(), 2)  # Round to 2 decimals
+        if len(valid_values) > 0:
+            avg_changes[days] = round(valid_values.mean(), 2)
 
 # Only create chart if we have any data
 if avg_changes:
-    fig = px.bar(
+    fig1 = px.bar(
         x=list(avg_changes.keys()),
         y=list(avg_changes.values()),
         labels={'x': 'Time Period', 'y': 'Average Price Change ($)'},
         title='Average Price Changes by Period'
     )
-    
-    # Add subtitle explaining that filters affect this chart
-    st.caption("💡 Both charts reflect the filters applied above (set, price range, etc.)")
-    
-    st.plotly_chart(fig, use_container_width=True)
 else:
+    fig1 = None
     st.info("📊 Price change data will appear once you have multiple days of historical data.")
 
-# second graph looking at average ungraded card prices
-
+# --------------------------
+# 2️⃣ Compute average ungraded price trend over time
+fig2 = None
 if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
-    # Apply the same filters to historical data
     history_filtered = history_df[
         (history_df["Set"].isin(selected_sets)) &
         (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
@@ -619,28 +613,33 @@ if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
         (history_df["PSA_10_Price"] >= min_psa10)
     ]
 
-    # Group by date and compute average ungraded price
-    trend_data = (
-        history_filtered.groupby("Date")["Ungraded_Price"]
-        .mean()
-        .reset_index()
-    )
+    trend_data = history_filtered.groupby("Date")["Ungraded_Price"].mean().reset_index()
 
     if not trend_data.empty:
-        fig = px.line(
+        fig2 = px.line(
             trend_data,
             x="Date",
             y="Ungraded_Price",
             title="Average Ungraded Price Over Time",
             labels={"Date": "Date", "Ungraded_Price": "Average Price ($)"}
         )
-        fig.update_traces(mode="lines+markers")
-        st.plotly_chart(fig, use_container_width=True)
+        fig2.update_traces(mode="lines+markers")
     else:
         st.info("No historical price data available for the current filters.")
 else:
     st.info("Historical price data unavailable or missing required columns.")
 
+# --------------------------
+# 3️⃣ Display side by side
+col1, col2 = st.columns(2)
 
+with col1:
+    if fig1:
+        st.plotly_chart(fig1, use_container_width=True)
 
+with col2:
+    if fig2:
+        st.plotly_chart(fig2, use_container_width=True)
 
+# Add a caption for context
+st.caption("💡 Both charts reflect the filters applied above (set, price range, etc.)")
