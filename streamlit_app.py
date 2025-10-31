@@ -549,20 +549,28 @@ else:
 st.markdown("---")
 st.subheader("📊 Price Trend Analysis")
 
-avg_changes = {
-    '3-day': filtered['Ungraded_3d_Change'].mean(),
-    '7-day': filtered['Ungraded_7d_Change'].mean(),
-    '14-day': filtered['Ungraded_14d_Change'].mean(),
-    '30-day': filtered['Ungraded_30d_Change'].mean()
-}
+# Only include periods where the column exists
+avg_changes = {}
+for days, col_name in [
+    ('3-day', 'Ungraded_3d_Change'),
+    ('7-day', 'Ungraded_7d_Change'),
+    ('14-day', 'Ungraded_14d_Change'),
+    ('30-day', 'Ungraded_30d_Change')
+]:
+    if col_name in filtered.columns:
+        avg_changes[days] = filtered[col_name].mean()
 
-fig = px.bar(
-    x=list(avg_changes.keys()),
-    y=list(avg_changes.values()),
-    labels={'x': 'Time Period', 'y': 'Average Price Change ($)'},
-    title='Average Price Changes by Period (Filtered Results)'
-)
-st.plotly_chart(fig, use_container_width=True)
+# Only create chart if we have any data
+if avg_changes:
+    fig = px.bar(
+        x=list(avg_changes.keys()),
+        y=list(avg_changes.values()),
+        labels={'x': 'Time Period', 'y': 'Average Price Change ($)'},
+        title='Average Price Changes by Period (Filtered Results)'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.info("📊 Price change data will appear once you have multiple days of historical data.")
 
     
 
