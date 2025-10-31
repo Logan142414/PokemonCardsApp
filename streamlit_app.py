@@ -561,7 +561,7 @@ for days, col_name in [
         # Use .dropna() to exclude NaN values before calculating mean
         valid_values = filtered[col_name].dropna()
         if len(valid_values) > 0:  # Only add if there's at least one non-NaN value
-            avg_changes[days] = valid_values.mean()
+            avg_changes[days] = round(valid_values.mean(), 2)  # Round to 2 decimals
 
 # Only create chart if we have any data
 if avg_changes:
@@ -569,8 +569,12 @@ if avg_changes:
         x=list(avg_changes.keys()),
         y=list(avg_changes.values()),
         labels={'x': 'Time Period', 'y': 'Average Price Change ($)'},
-        title='Average Price Changes by Period (Filtered Results)'
+        title='Average Price Changes by Period'
     )
+    
+    # Add subtitle explaining that filters affect this chart
+    st.caption("💡 This chart reflects the filters applied above (set, price range, etc.)")
+    
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("📊 Price change data will appear once you have multiple days of historical data.")
