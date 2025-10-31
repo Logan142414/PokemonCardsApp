@@ -629,7 +629,7 @@ if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
             trend_data,
             x="Date",
             y="Ungraded_Price",
-            title="Average Ungraded Price Over Time (Oct 26, 2025+)",
+            title="Average Ungraded Price Over Time",
             labels={"Date": "Date", "Ungraded_Price": "Average Price ($)"}
         )
         fig2.update_traces(mode="lines+markers", text=trend_data["Ungraded_Price"], textposition="top right")
