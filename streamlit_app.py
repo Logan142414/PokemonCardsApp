@@ -547,7 +547,7 @@ else:
 # --------------------------
 
 st.markdown("---")
-st.subheader("📊 Price Trend Analysis")
+st.subheader("Visualizations")
 
 # Only include periods where the column exists
 avg_changes = {}
