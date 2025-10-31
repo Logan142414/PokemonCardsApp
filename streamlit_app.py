@@ -558,7 +558,10 @@ for days, col_name in [
     ('30-day', 'Ungraded_30d_Change')
 ]:
     if col_name in filtered.columns:
-        avg_changes[days] = filtered[col_name].mean()
+        # Use .dropna() to exclude NaN values before calculating mean
+        valid_values = filtered[col_name].dropna()
+        if len(valid_values) > 0:  # Only add if there's at least one non-NaN value
+            avg_changes[days] = valid_values.mean()
 
 # Only create chart if we have any data
 if avg_changes:
@@ -571,7 +574,6 @@ if avg_changes:
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("📊 Price change data will appear once you have multiple days of historical data.")
-
     
 
 # Apply filters to the full history (not just latest snapshot)
