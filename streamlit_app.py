@@ -612,10 +612,12 @@ def build_vector_store(df):
     for i, row in df.iterrows():
         # Start with basic info
         content = f"""Card: {row['Card_Name']}
-    Set: {row['Set']}
-    Ungraded: ${row['Ungraded_Price']:.2f}
-    Grade 9: ${row['Grade_9_Price']:.2f}
-    PSA 10: ${row['PSA_10_Price']:.2f}"""
+    "Set: {row['Set']}"
+    "Ungraded: ${row['Ungraded_Price']:.2f}"
+    "Grade 9: ${row['Grade_9_Price']:.2f}"
+    "PSA 10: ${row['PSA_10_Price']:.2f}""""
+
+
     
         # Dynamically add all price change columns that exist
         for days in [3, 7, 14, 30]:
@@ -671,4 +673,5 @@ for chat in st.session_state.chat_history:
     st.markdown(f"**You:** {chat['user']}")
     st.markdown(f"**Bot:** {chat['bot']}")
     st.markdown("---")
+
 """"
