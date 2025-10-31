@@ -568,7 +568,7 @@ st.download_button(
 
 
 # --- Optional GenAI Chatbot Section (currently disabled) ---
-""""
+' ' ' 
 # 2. Define Hugging Face LLM Wrapper using chat completions
 class HFInferenceLLM(LLM):
     model_name: str
@@ -612,10 +612,10 @@ def build_vector_store(df):
     for i, row in df.iterrows():
         # Start with basic info
         content = f"""Card: {row['Card_Name']}
-    "Set: {row['Set']}"
-    "Ungraded: ${row['Ungraded_Price']:.2f}"
-    "Grade 9: ${row['Grade_9_Price']:.2f}"
-    "PSA 10: ${row['PSA_10_Price']:.2f}""""
+    Set: {row['Set']}
+    Ungraded: ${row['Ungraded_Price']:.2f}
+    Grade 9: ${row['Grade_9_Price']:.2f}
+    PSA 10: ${row['PSA_10_Price']:.2f}"""
 
 
     
@@ -650,7 +650,6 @@ if st.button("Ask"):
                 # Improved prompt with strict instructions
                 prompt = f"""You are a Pokemon card pricing expert. Answer using ONLY the data below. Be precise and accurate.
 
-""""
 CRITICAL RULES:
 1. Use ONLY exact numbers from the data - DO NOT make up values
 2. For price change questions, look at "Ungraded_Price_"X"d_Change" values. Based on looking at the past 3 days, 7 days (week), 14 days (two weeks), 21 days (3 weeks), 30 days (1 month)
@@ -674,4 +673,4 @@ for chat in st.session_state.chat_history:
     st.markdown(f"**You:** {chat['user']}")
     st.markdown(f"**Bot:** {chat['bot']}")
     st.markdown("---")
-
+' ' ' 
