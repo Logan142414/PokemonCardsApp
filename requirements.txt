@@ -11,3 +11,4 @@ faiss-cpu
 selenium
 webdriver-manager
 google-cloud-storage
+plotly
