@@ -563,6 +563,12 @@ st.download_button(
     mime="text/csv"
 )
 
+
+
+
+
+# --- Optional GenAI Chatbot Section (currently disabled) ---
+""""
 # 2. Define Hugging Face LLM Wrapper using chat completions
 class HFInferenceLLM(LLM):
     model_name: str
@@ -665,3 +671,4 @@ for chat in st.session_state.chat_history:
     st.markdown(f"**You:** {chat['user']}")
     st.markdown(f"**Bot:** {chat['bot']}")
     st.markdown("---")
+""""
