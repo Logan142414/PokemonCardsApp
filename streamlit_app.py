@@ -674,4 +674,3 @@ for chat in st.session_state.chat_history:
     st.markdown(f"**Bot:** {chat['bot']}")
     st.markdown("---")
 
-""""
