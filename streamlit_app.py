@@ -650,6 +650,7 @@ if st.button("Ask"):
                 # Improved prompt with strict instructions
                 prompt = f"""You are a Pokemon card pricing expert. Answer using ONLY the data below. Be precise and accurate.
 
+""""
 CRITICAL RULES:
 1. Use ONLY exact numbers from the data - DO NOT make up values
 2. For price change questions, look at "Ungraded_Price_"X"d_Change" values. Based on looking at the past 3 days, 7 days (week), 14 days (two weeks), 21 days (3 weeks), 30 days (1 month)
