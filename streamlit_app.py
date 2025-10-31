@@ -577,7 +577,6 @@ st.download_button(
 st.markdown("---")
 st.subheader("Price Analytics")
 
-# Only include periods where the column exists
 avg_changes = {}
 for days, col_name in [
     ('3-day', 'Ungraded_3d_Change'),
@@ -596,14 +595,16 @@ if avg_changes:
         x=list(avg_changes.keys()),
         y=list(avg_changes.values()),
         labels={'x': 'Time Period', 'y': 'Average Price Change ($)'},
-        title='Average Price Changes by Period'
+        title='Average Price Changes by Period',
+        text=[f"${v:.2f}" for v in avg_changes.values()]  # show values above bars
     )
+    fig1.update_traces(textposition='outside')  # values above bars
 else:
     fig1 = None
     st.info("📊 Price change data will appear once you have multiple days of historical data.")
 
 # --------------------------
-# 2️⃣ Compute average ungraded price trend over time
+# 2️⃣ Compute average ungraded price trend over time (Oct 26, 2025 or later)
 fig2 = None
 if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
     history_filtered = history_df[
@@ -613,17 +614,25 @@ if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
         (history_df["PSA_10_Price"] >= min_psa10)
     ]
 
-    trend_data = history_filtered.groupby("Date")["Ungraded_Price"].mean().reset_index()
+    # Filter to Oct 26, 2025 or later
+    history_filtered["Date"] = pd.to_datetime(history_filtered["Date"])
+    trend_data = (
+        history_filtered[history_filtered["Date"] >= "2025-10-26"]
+        .groupby("Date")["Ungraded_Price"]
+        .mean()
+        .round(2)  # round average price
+        .reset_index()
+    )
 
     if not trend_data.empty:
         fig2 = px.line(
             trend_data,
             x="Date",
             y="Ungraded_Price",
-            title="Average Ungraded Price Over Time",
+            title="Average Ungraded Price Over Time (Oct 26, 2025+)",
             labels={"Date": "Date", "Ungraded_Price": "Average Price ($)"}
         )
-        fig2.update_traces(mode="lines+markers")
+        fig2.update_traces(mode="lines+markers", text=trend_data["Ungraded_Price"], textposition="top right")
     else:
         st.info("No historical price data available for the current filters.")
 else:
