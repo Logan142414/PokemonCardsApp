@@ -578,7 +578,43 @@ if avg_changes:
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("📊 Price change data will appear once you have multiple days of historical data.")
-    
+
+st.subheader("📈 Average Ungraded Price Over Time")
+st.caption("💡 This reflects the same filters applied above (set, price range, etc.).")
+
+if "Date" in history_df.columns and "Ungraded_Price" in history_df.columns:
+    # Apply the same filters to historical data
+    history_filtered = history_df[
+        (history_df["Set"].isin(selected_sets)) &
+        (history_df["Ungraded_Price"].between(min_ungraded, max_ungraded)) &
+        (history_df["Grade_9_Price"] >= min_grade9) &
+        (history_df["PSA_10_Price"] >= min_psa10)
+    ]
+
+    # Group by date and compute average ungraded price
+    trend_data = (
+        history_filtered.groupby("Date")["Ungraded_Price"]
+        .mean()
+        .reset_index()
+    )
+
+    if not trend_data.empty:
+        fig = px.line(
+            trend_data,
+            x="Date",
+            y="Ungraded_Price",
+            title="Average Ungraded Price Over Time",
+            labels={"Date": "Date", "Ungraded_Price": "Average Price ($)"}
+        )
+        fig.update_traces(mode="lines+markers")
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("No historical price data available for the current filters.")
+else:
+    st.info("Historical price data unavailable or missing required columns.")
+
+
+
 
 # Apply filters to the full history (not just latest snapshot)
 history_filtered = history_df[
