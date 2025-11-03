@@ -235,6 +235,7 @@ def scrape_pricecharting_data():
 
     # Remove rows where Card_Name matches sealed products
     df = df[~df["Card_Name_clean"].str.contains(pattern, case=False, na=False)]
+    df = df.drop(columns=["Card_Name_clean"])
 
     
     if df.empty:
