@@ -419,6 +419,8 @@ except Exception as e:
     st.warning(f"No existing cloud history found or failed to load: {e}")
     history_df = pd.DataFrame()
 
+history_df = history_df[~history_df["Card_Name"].str.lower().str.contains(pattern, na=False)]
+
 # Work with full history + keep latest snapshot separate
 if not history_df.empty:
     history_df["Date"] = pd.to_datetime(history_df["Date"])
@@ -470,9 +472,16 @@ if not history_df.empty:
                 history_df["Ungraded_Price"] - history_df[f"Ungraded_Price_{days}d_ago"]
             )
 
-    # Keep only the latest snapshot for export / summary
-    latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
-    latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
+# Keep only the latest snapshot for export / summary
+latest_with_changes = history_df[history_df["Date"] == latest_date].copy()
+latest_with_changes = latest_with_changes.loc[:, ~latest_with_changes.columns.duplicated()]
+
+if not latest_with_changes.empty and "Card_Name" in latest_with_changes.columns:
+    latest_with_changes = latest_with_changes[
+        ~latest_with_changes["Card_Name"].str.lower().str.contains(pattern, na=False)
+    ]
+
+
 else:
     latest_with_changes = pd.DataFrame()
     
