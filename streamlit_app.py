@@ -20,6 +20,16 @@ from langchain.schema import Document
 import plotly.express as px
 
 
+# --------------------------
+# Define sealed product keywords globally (used across scraping and filtering)
+# --------------------------
+sealed_keywords = [
+    "booster pack","booster box","elite trainer box","etb","display box",
+    "factory sealed","blister","theme deck","starter deck","pokemon tin",
+    "promo set","bundle","collection"
+]
+pattern = '|'.join(sealed_keywords)
+
 
 # --------------------------
 # Google Cloud Storage Setup
@@ -230,13 +240,6 @@ def scrape_pricecharting_data():
         return df 
     
     df["Card_Name_clean"] = df["Card_Name"].str.strip()
-
-    # Combine keywords into regex
-    sealed_keywords = [
-    "booster pack","booster box","elite trainer box","etb","display box",
-    "factory sealed","blister","theme deck","starter deck","pokemon tin",
-    "promo set","bundle","collection"]
-    pattern = '|'.join(sealed_keywords)
 
     # Remove rows where Card_Name matches sealed products
     df = df[~df["Card_Name_clean"].str.contains(pattern, case=False, na=False)]
