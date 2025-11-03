@@ -1,19 +1,8 @@
-# 🎈 Blank app template
+# Pokemon Web Scraping App README
 
-A simple Streamlit app template for you to modify!
+## Pokémon Card Pricing App
+- Streamlit demo: [pokemoncards-exploration.streamlit.app](https://pokemoncards-exploration.streamlit.app/)
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
-
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+## Medium Articles
+- Data Analysis Project 1: [Building a Pokémon Card Price Tracker App with Web Scraping](https://medium.com/@logan.laszewski14/learning-web-scraping-by-tracking-pokémon-card-prices-30d97a8f5eeb)
+- Data Analysis Project 2: [Pokémon Price Tracker Part 2: Historical Tracking, Cloud Storage, and Interactive Analysis](https://medium.com/@logan.laszewski14/pok%C3%A9mon-price-tracker-part-2-historical-tracking-cloud-storage-and-interactive-analysis-af61567ee335)
