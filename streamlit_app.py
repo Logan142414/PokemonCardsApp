@@ -224,6 +224,11 @@ def scrape_pricecharting_data():
         time.sleep(0.3)
 
    
+    df = pd.DataFrame(all_data)
+
+    if df.empty:
+        return df 
+    
     df["Card_Name_clean"] = df["Card_Name"].str.strip()
 
     # Combine keywords into regex
