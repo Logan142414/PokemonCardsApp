@@ -223,17 +223,18 @@ def scrape_pricecharting_data():
         progress.progress((i + 1) / len(set_urls))
         time.sleep(0.3)
 
-    # Turn into DataFrame
-    df = pd.DataFrame(all_data)
    
-    sealed_keywords = [
-    "booster pack","booster box","elite trainer box","etb","display box","factory sealed","blister","theme deck","starter deck","pokemon tin","promo set","bundle","collection"]
+    df["Card_Name_clean"] = df["Card_Name"].str.strip()
 
-    # Combine into regex
+    # Combine keywords into regex
+    sealed_keywords = [
+    "booster pack","booster box","elite trainer box","etb","display box",
+    "factory sealed","blister","theme deck","starter deck","pokemon tin",
+    "promo set","bundle","collection"]
     pattern = '|'.join(sealed_keywords)
 
-    # Remove rows where Card_Name clearly matches one of these sealed products
-    df = df[~df["Card_Name"].str.contains(pattern, case=False, na=False)]
+    # Remove rows where Card_Name matches sealed products
+    df = df[~df["Card_Name_clean"].str.contains(pattern, case=False, na=False)]
 
     
     if df.empty:
