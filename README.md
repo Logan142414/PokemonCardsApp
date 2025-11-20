@@ -89,18 +89,10 @@ The Pokémon Price Tracker is a Python web scraping project designed to track Po
 
 ---
 
-## Repository
-
-[GitHub Repo: Pokémon Price Tracker](file:///mnt/data/Updating%20Resume%20Project%20Format.pdf)
-
-
-
-
-
-# Pokemon Web Scraping App README
-
 ## Pokémon Card Pricing App
 - Streamlit demo: [pokemoncards-exploration.streamlit.app](https://pokemoncards-exploration.streamlit.app/)
+
+---
 
 ## Medium Articles
 - Part 1: [Building a Pokémon Card Price Tracker App with Web Scraping](https://medium.com/@logan.laszewski14/learning-web-scraping-by-tracking-pokémon-card-prices-30d97a8f5eeb)
