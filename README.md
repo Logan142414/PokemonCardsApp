@@ -1,7 +1,9 @@
 # Pokémon Price Tracker
 
 **Author:** Logan Laszewski
+
 **Project Type:** Web Scraping, Data Analysis, Streamlit App
+
 **Last Updated:** November 2025
 
 ---
