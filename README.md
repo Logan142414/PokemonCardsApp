@@ -36,16 +36,14 @@ The Pokémon Price Tracker is a Python web scraping project designed to track Po
 
 ### Part 2: Historical Tracking & Analysis
 
-* Persistent cloud storage using Google Cloud Storage to store historical data.
+* Uses Google Cloud Storage to store historical data (Adds to the saved dataset every time the refresh button is pressed on a new day).
 * Tracks daily snapshots of card prices.
 * Calculates price changes over 3, 7, 14, and 30-day periods.
 * Visualizations:
-
   * Average price changes over time (bar chart)
   * Ungraded price trends (line chart)
-* CSV export for offline analysis.
-* Prioritizes scraping high-value cards using URL sorting by price.
-* Optional generative AI integration for natural language insights (experimented using LangChain and FAISS embeddings).
+* CSV export for offline and further analysis.
+* Prioritizes scraping high value cards using URL sorting by price.
 
 ---
 
@@ -53,11 +51,7 @@ The Pokémon Price Tracker is a Python web scraping project designed to track Po
 
 **Languages & Libraries:**
 
-* Python, Pandas, NumPy
-* BeautifulSoup, Requests
-* Streamlit for interactive dashboards
-* Google Cloud Storage API for cloud persistence
-* Optional: Selenium/Playwright for dynamic content (future enhancement)
+* Python, Pandas, NumPy, BeautifulSoup, Requests
 
 **Scraping Approach:**
 
@@ -66,28 +60,21 @@ The Pokémon Price Tracker is a Python web scraping project designed to track Po
 3. Use Python loops to iterate over sets and append data to a dataset.
 4. For historical tracking, append daily snapshots to a cumulative CSV in cloud storage.
 
-**Price Change Calculations:**
-
-* Compare current prices to snapshots from 3, 7, 14, and 30 days ago.
-* Detect trends and highlight potential investment opportunities.
-
 ---
 
 ## Project Learnings
 
 * Inspecting HTML and understanding web structure is crucial for effective scraping.
-* Dynamic JavaScript content requires advanced tools like Selenium or Playwright.
 * APIs are often a more reliable alternative to scraping.
 * Automating historical tracking and cloud storage ensures data persistence and trend analysis.
-* Interactive dashboards make large datasets usable for non-technical users.
 
 ---
 
 ## Future Enhancements
 
 * Full dataset capture using browser automation tools.
-* Automate daily scraping with GitHub Actions or Cloud Functions.
-* Explore more advanced AI-driven insights for price trends and investment suggestions.
+* Automate daily scraping.
+* Explore AI methods for insights into price trends and investment suggestions.
 
 ---
 
