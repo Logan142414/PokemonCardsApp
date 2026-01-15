@@ -419,7 +419,7 @@ try:
     history_df = pd.read_csv(BytesIO(data))
     st.success("")
 except Exception as e:
-    st.warning(f"No existing cloud history found or failed to load: {e}")
+    st.warning("Cloud history unavailable right now.")
     history_df = pd.DataFrame()
 
 history_df = history_df[~history_df["Card_Name"].str.lower().str.contains(pattern, na=False)]
